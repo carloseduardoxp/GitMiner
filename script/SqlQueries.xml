@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseOperations>
+
+    <sqls type="select">
+        <sql name="projectsWithoutBranches">
+            <query>	
+                SELECT CD_PROJECT,NM_PROJECT,DS_URL
+                FROM TB_PROJECT
+            </query>
+        </sql>
+        <sql name="branchesWithoutClassesCommits">
+            <query>	
+                SELECT B.CD_BRANCH,B.NM_BRANCH
+                FROM TB_BRANCH B 
+                WHERE B.CD_PROJECT = ?
+            </query>
+        </sql>	
+        <sql name="commitsWithoutChanges">
+            <query>	
+                SELECT C.DS_HASH,C.DT_COMMIT,C.NM_AUTHOR,C.DS_EMAIL_AUTHOR,C.DS_SUBJECT
+                FROM TB_COMMIT C            
+                WHERE C.CD_BRANCH = ?
+            </query>
+        </sql>	   
+        <sql name="classesWithoutChanges">
+            <query>	
+                SELECT CD_CLASS,NM_CLASS
+                FROM TB_CLASS
+                WHERE CD_BRANCH = ?  
+            </query>
+        </sql>	 
+        <sql name="changeCommitsByCommit">
+            <query>	
+                SELECT CC.CD_COMMIT_CHANGE,CC.DS_MODIFICATION_TYPE,CC.NM_FILE
+                FROM TB_COMMIT_CHANGE CC
+                WHERE CC.DS_HASH = ?
+            </query>
+        </sql>	
+        <sql name="classCommitChangeByCommit">
+            <query>	
+                SELECT `TB_CLASS_COMMIT_CHANGE`.`CD_COMMIT_CHANGE`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CD_CLASS`,					    
+					    `TB_CLASS_COMMIT_CHANGE`.`ACAIC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`ACMIC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`AID`,
+					    `TB_CLASS_COMMIT_CHANGE`.`ANA`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CAM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CBO`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CIS`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CLD`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DAM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DCAEC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DCC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DCMEC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DIT`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DSC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`EIC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`EIP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`ICH`,
+					    `TB_CLASS_COMMIT_CHANGE`.`IR`,
+					    `TB_CLASS_COMMIT_CHANGE`.`LCOM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`LOC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`McCabe`,
+					    `TB_CLASS_COMMIT_CHANGE`.`MFA`,
+					    `TB_CLASS_COMMIT_CHANGE`.`MOA`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NAD`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NCM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NCP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NMA`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NMD`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NMI`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NMO`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOA`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOD`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOF`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOH`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOPM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOTC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOTI`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NPrM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`OneWay`,
+					    `TB_CLASS_COMMIT_CHANGE`.`ng`,
+					    `TB_CLASS_COMMIT_CHANGE`.`PIIR`,
+					    `TB_CLASS_COMMIT_CHANGE`.`PP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`REIP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RFC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RFP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RPII`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RRFP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RRTP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RTP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`SIX`,
+					    `TB_CLASS_COMMIT_CHANGE`.`WMC`
+					FROM `db_gitMiner`.`TB_CLASS_COMMIT_CHANGE`
+					WHERE CD_COMMIT_CHANGE = ?
+            </query>
+        </sql>	
+        <sql name="classCommitChangeByClass">
+            <query>	
+                SELECT `TB_CLASS_COMMIT_CHANGE`.`CD_COMMIT_CHANGE`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CD_CLASS`,
+					    `TB_CLASS_COMMIT_CHANGE`.`ACAIC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`ACMIC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`AID`,
+					    `TB_CLASS_COMMIT_CHANGE`.`ANA`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CAM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CBO`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CIS`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CLD`,
+					    `TB_CLASS_COMMIT_CHANGE`.`CP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DAM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DCAEC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DCC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DCMEC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DIT`,
+					    `TB_CLASS_COMMIT_CHANGE`.`DSC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`EIC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`EIP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`ICH`,
+					    `TB_CLASS_COMMIT_CHANGE`.`IR`,
+					    `TB_CLASS_COMMIT_CHANGE`.`LCOM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`LOC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`McCabe`,
+					    `TB_CLASS_COMMIT_CHANGE`.`MFA`,
+					    `TB_CLASS_COMMIT_CHANGE`.`MOA`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NAD`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NCM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NCP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NMA`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NMD`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NMI`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NMO`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOA`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOD`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOF`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOH`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOPM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOTC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NOTI`,
+					    `TB_CLASS_COMMIT_CHANGE`.`NPrM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`OneWay`,
+					    `TB_CLASS_COMMIT_CHANGE`.`ng`,
+					    `TB_CLASS_COMMIT_CHANGE`.`PIIR`,
+					    `TB_CLASS_COMMIT_CHANGE`.`PP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`REIP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RFC`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RFP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RPII`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RRFP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RRTP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`RTP`,
+					    `TB_CLASS_COMMIT_CHANGE`.`SIX`,
+					    `TB_CLASS_COMMIT_CHANGE`.`WMC`
+					FROM `db_gitMiner`.`TB_CLASS_COMMIT_CHANGE`
+					WHERE CD_CLASS = ?
+            </query>
+        </sql>	
+        <sql name="smellsByChange">
+            <query>	
+                SELECT DS.CD_DETECTED_SMELL,DS.NM_DETECTED_SMELL,DS.DS_OBSERVACAO
+                FROM TB_DETECTED_SMELL DS
+                WHERE DS.CD_COMMIT_CHANGE = ?
+                  AND DS.CD_CLASS = ?
+            </query>
+        </sql>	
+              
+        <sql name="classByChange">
+            <query>	         
+                SELECT DISTINCT CD_CLASS
+                FROM TB_COMMIT_CHANGE
+                WHERE CD_CLASS IS NOT NULL 
+                AND NM_FILE = ?         
+            </query>    
+        </sql>                         
+               
+        <sql name="classByChangeDuplicate">
+            <query>	                          
+                SELECT CD_CLASS
+                FROM TB_COMMIT_CHANGE
+                WHERE CD_COMMIT_CHANGE = (SELECT MAX(CD_COMMIT_CHANGE)
+                FROM TB_COMMIT_CHANGE
+                WHERE NM_FILE = ?
+                AND CD_COMMIT_CHANGE &lt; ?
+                AND CD_CLASS IS NOT NULL)                         
+            </query>    
+        </sql>                                            
+    </sqls>
+	
+    <sqls type="insert">
+        <sql name="saveNewProject">
+            <query>	
+                INSERT INTO TB_PROJECT(NM_PROJECT,DS_URL) VALUES (?,?)
+            </query>		
+        </sql>
+		
+        <sql name="saveNewBranch">
+            <query>	
+                Insert into TB_BRANCH(NM_BRANCH,CD_PROJECT) VALUES (?,?)
+            </query>		
+        </sql>
+        
+        <sql name="saveNewCommit">
+            <query>	
+                INSERT INTO TB_COMMIT (DS_HASH,DT_COMMIT,NM_AUTHOR,
+                DS_EMAIL_AUTHOR,DS_SUBJECT,CD_BRANCH) VALUES (?,?,?,?,?,?)
+            </query>		
+        </sql>
+        
+        <sql name="saveNewCommitChange">
+            <query>	
+                INSERT INTO TB_COMMIT_CHANGE (DS_MODIFICATION_TYPE,NM_FILE,
+                DS_HASH) VALUES (?,?,?)
+            </query>		
+        </sql>
+        
+        <sql name="saveNewClassCommitChange">
+            <query>	
+                INSERT INTO TB_CLASS_COMMIT_CHANGE (CD_CLASS,CD_COMMIT_CHANGE) VALUES (?,?)
+            </query>		
+        </sql>
+        
+        <sql name="saveNewClass">
+            <query>	            
+                INSERT INTO TB_CLASS (NM_CLASS,CD_BRANCH) VALUES (?,?)
+            </query>
+        </sql>        
+            
+    </sqls>
+	
+    <sqls type="update">
+        <sql name="updateChangeClass">
+            <query>	
+                UPDATE TB_COMMIT_CHANGE
+                SET CD_CLASS = ?
+                WHERE CD_COMMIT_CHANGE = ?
+            </query>		
+        </sql>		        
+        
+        <sql name="updateChangeLines">
+            <query>	
+                UPDATE TB_COMMIT_CHANGE
+                SET QT_LINES = ?
+                WHERE CD_COMMIT_CHANGE = ?
+            </query>		
+        </sql>		        	
+                            
+    </sqls>
+	    
+</databaseOperations>	
