@@ -193,7 +193,9 @@ public final class MenuView extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuIteExitActionPerformed
 
     private void mnuIteCodeMetricsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIteCodeMetricsActionPerformed
-        // TODO add your handling code here:
+    	if (isPathDatabaseOk()) {
+            showJInternalFrame(new ImportMetricsView());
+        }
     }//GEN-LAST:event_mnuIteCodeMetricsActionPerformed
 
     private void mnuIteSmellsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIteSmellsActionPerformed

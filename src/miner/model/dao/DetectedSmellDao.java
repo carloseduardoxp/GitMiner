@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import miner.model.dao.structure.CrudDao;
 import miner.model.dao.structure.ICrudDao;
+import miner.model.dao.structure.JdbcConnection;
+import miner.model.dao.structure.xml.TypeQuery;
 import miner.model.domain.ClassCommitChange;
 import miner.model.domain.CommitChange;
 import miner.model.domain.DetectedSmell;
@@ -44,7 +47,31 @@ public class DetectedSmellDao {
         return getDetectedSmells(change,dao);
     }    
 
-    public void insertDetectedSmells(Map<CommitChange, Set<SmellEnum>> detectedSmells, Connection connection) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	public void insertDetectedSmells(List<DetectedSmell> smells) throws ValidationException,SQLException,ConnectionException {
+		Connection connection = JdbcConnection.getConnection();
+		ICrudDao dao = new CrudDao(connection);
+		dao.updateBatch(TypeQuery.INSERT,"insertCodeSmells",convertListToParameters(smells));
+		connection.commit();
+		connection.close();
+		
+	}
+
+	private List<Map<Integer, Object>> convertListToParameters(List<DetectedSmell> smells) {
+		List<Map<Integer, Object>> allParameters = new ArrayList<>();					
+        for (DetectedSmell smell: smells) {
+        	allParameters.add(convertToParametersMetric(smell));
+        }
+        
+        return allParameters;
+	}
+
+	private Map<Integer, Object> convertToParametersMetric(DetectedSmell smell) {
+		Map<Integer,Object> parameters = new HashMap<>();
+        parameters.put(1,smell.getSmell().toString());
+        parameters.put(2,smell.getObs());
+        parameters.put(3,smell.getChange().getCommitChange().getId());
+        parameters.put(4,smell.getChange().getJavaClass().getId());
+        return parameters;        
+
+	}
 }

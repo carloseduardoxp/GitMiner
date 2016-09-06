@@ -12,14 +12,18 @@ import java.util.Map;
 import miner.model.dao.structure.CrudDao;
 import miner.model.dao.structure.DaoFactory;
 import miner.model.dao.structure.ICrudDao;
+import miner.model.dao.structure.JdbcConnection;
 import miner.model.dao.structure.xml.TypeQuery;
 import miner.model.domain.Class;
 import miner.model.domain.ClassCommitChange;
+import miner.model.domain.Commit;
 import miner.model.domain.CommitChange;
 import miner.util.exception.ConnectionException;
 import miner.util.exception.ValidationException;
 
 public class ClassCommitChangeDao {
+	
+	private static int i = 0;
 	
 	public void save(List<ClassCommitChange> classCommitsChange,Connection jdbc) throws IOException,ConnectionException {
         ICrudDao dao = new CrudDao(jdbc);
@@ -41,7 +45,7 @@ public class ClassCommitChangeDao {
         return parameters;        
     }
 
-	public List<ClassCommitChange> mountClassChanges(CommitChange change, ICrudDao dao) throws SQLException,ConnectionException,ValidationException {        
+	public List<ClassCommitChange> mountClassChanges(CommitChange change, ICrudDao dao) throws SQLException,ConnectionException,ValidationException {
 		DetectedSmellDao detectedSmellDao = DaoFactory.getDetectedSmellDao();
 		List<ClassCommitChange> changes = getClassCommitsChange(change,dao);
 		for (ClassCommitChange classCommit: changes) {
@@ -67,10 +71,10 @@ public class ClassCommitChangeDao {
         return changes;
     }
 	
-	private List<ClassCommitChange> convertToClassCommitChange(ResultSet rs,CommitChange change) throws ValidationException,SQLException {		
+	private List<ClassCommitChange> convertToClassCommitChange(ResultSet rs,CommitChange change) throws ValidationException,SQLException {
         List<ClassCommitChange> changes = new ArrayList<>();
         while (rs.next()) {
-        	ClassCommitChange classCommitChange = new ClassCommitChange(new Class(rs.getInt(2)),change);
+        	ClassCommitChange classCommitChange = new ClassCommitChange(new Class(rs.getInt(2),rs.getString(3)),change);
             changes.add(classCommitChange);
         }
         return changes;
@@ -91,6 +95,86 @@ public class ClassCommitChangeDao {
             changes.add(classCommitChange);
         }
         return changes;
+    }
+
+	public void updateMetrics(Commit commit) throws ValidationException,SQLException,ConnectionException {
+		Connection connection = JdbcConnection.getConnection();
+		ICrudDao dao = new CrudDao(connection);
+		dao.updateBatch(TypeQuery.UPDATE,"classCommitChangeMetrics",convertListToParameters(commit));
+		connection.commit();
+		connection.close();
+	}
+
+	private List<Map<Integer, Object>> convertListToParameters(Commit commit) {
+		List<Map<Integer, Object>> allParameters = new ArrayList<>();					
+        for (CommitChange cc: commit.getChanges()) {
+        	for (ClassCommitChange ccc: cc.getClassCommitchange()) {
+        		allParameters.add(convertToParametersMetric(ccc));
+        	}
+        }
+        return allParameters;
+	}
+	
+	private Map<Integer, Object> convertToParametersMetric(ClassCommitChange classCommitChange) {
+        Map<Integer,Object> parameters = new HashMap<>();
+        parameters.put(1,classCommitChange.getACAIC());
+        parameters.put(2,classCommitChange.getACMIC());
+        parameters.put(3,classCommitChange.getAID());
+        parameters.put(4,classCommitChange.getANA());
+        parameters.put(5,classCommitChange.getCAM());
+        parameters.put(6,classCommitChange.getCBO());
+        parameters.put(7,classCommitChange.getCIS());
+        parameters.put(8,classCommitChange.getCLD());
+        parameters.put(9,classCommitChange.getCP());
+        parameters.put(10,classCommitChange.getDAM());
+        parameters.put(11,classCommitChange.getDCAEC());
+        parameters.put(12,classCommitChange.getDCC());
+        parameters.put(13,classCommitChange.getDCMEC());
+        parameters.put(14,classCommitChange.getDIT());
+        parameters.put(15,classCommitChange.getDSC());
+        parameters.put(16,classCommitChange.getEIC());
+        parameters.put(17,classCommitChange.getEIP());
+        parameters.put(18,classCommitChange.getICH());
+        parameters.put(19,classCommitChange.getIR());
+        parameters.put(20,classCommitChange.getLCOM());
+        parameters.put(21,classCommitChange.getLOC());
+        parameters.put(22,classCommitChange.getMcCabe());
+        parameters.put(23,classCommitChange.getMFA());
+        parameters.put(24,classCommitChange.getMOA());
+        parameters.put(25,classCommitChange.getNAD());
+        parameters.put(26,classCommitChange.getNCM());
+        parameters.put(27,classCommitChange.getNCP());
+        parameters.put(28,classCommitChange.getNMA());
+        parameters.put(29,classCommitChange.getNMD());
+        parameters.put(30,classCommitChange.getNMI());
+        parameters.put(31,classCommitChange.getNMO());
+        parameters.put(32,classCommitChange.getNOA());
+        parameters.put(33,classCommitChange.getNOC());
+        parameters.put(34,classCommitChange.getNOD());
+        parameters.put(35,classCommitChange.getNOF());
+        parameters.put(36,classCommitChange.getNOH());
+        parameters.put(37,classCommitChange.getNOM());
+        parameters.put(38,classCommitChange.getNOP());
+        parameters.put(39,classCommitChange.getNOPM());
+        parameters.put(40,classCommitChange.getNOTC());
+        parameters.put(41,classCommitChange.getNOTI());
+        parameters.put(42,classCommitChange.getNPrM());
+        parameters.put(43,classCommitChange.getOneWay());
+        parameters.put(44,classCommitChange.getNg());
+        parameters.put(45,classCommitChange.getPIIR());
+        parameters.put(46,classCommitChange.getPP());
+        parameters.put(47,classCommitChange.getREIP());
+        parameters.put(48,classCommitChange.getRFC());
+        parameters.put(49,classCommitChange.getRFP());
+        parameters.put(50,classCommitChange.getRPII());
+        parameters.put(51,classCommitChange.getRRFP());
+        parameters.put(52,classCommitChange.getRRTP());
+        parameters.put(53,classCommitChange.getRTP());
+        parameters.put(54,classCommitChange.getSIX());
+        parameters.put(55,classCommitChange.getWMC());                
+        
+        parameters.put(56,classCommitChange.getCommitChange().getId());
+        return parameters;        
     }
 	
 }

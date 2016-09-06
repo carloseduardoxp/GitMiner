@@ -57,7 +57,7 @@ public class ClassCommitChange {
 	private Double REIP;
 	private Double RFC;
 	private Double RFP;
-	private Double RPII;
+	private Double RPII;	
 	private Double RRFP;
 	private Double RRTP;
 	private Double RTP;

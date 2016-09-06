@@ -18,10 +18,11 @@ public class DetectedSmell {
         this.change = change;
     }
 
-    public DetectedSmell(SmellEnum smell, String obs) {
+    public DetectedSmell(SmellEnum smell, ClassCommitChange change,String obs) {
         this.smell = smell;
+        this.change = change;
         this.obs = obs;
-    }        
+    }
 
     public Integer getId() {
         return id;
@@ -54,6 +55,11 @@ public class DetectedSmell {
     public void setChange(ClassCommitChange change) {
         this.change = change;
     }
+
+	@Override
+	public String toString() {
+		return "DetectedSmell [id=" + id + ", smell=" + smell + ", obs=" + obs + ", change=" + change.getJavaClass().getId()+" - "+change.getCommitChange().getId() + "]";
+	}
 
     
    

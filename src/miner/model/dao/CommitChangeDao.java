@@ -20,7 +20,6 @@ import org.apache.commons.io.FileUtils;
 import miner.model.dao.structure.CrudDao;
 import miner.model.dao.structure.DaoFactory;
 import miner.model.dao.structure.ICrudDao;
-import miner.model.dao.structure.JdbcConnection;
 import miner.model.dao.structure.xml.TypeQuery;
 import miner.model.domain.Commit;
 import miner.model.domain.CommitChange;
@@ -125,18 +124,6 @@ public class CommitChangeDao {
             throw new ValidationException("Error while updating class: No affectedRows CommitChangeID "+change+
                     " ClassID "+classId);
         }
-    }
-
-    public void updateLines(Map<Integer, Integer> lines) throws ConnectionException,SQLException {
-    	//Todo
-        Connection connection = JdbcConnection.getConnection();
-        ICrudDao dao = new CrudDao(connection);
-        for (Integer changeId: lines.keySet()) {
-            Integer numberLines = lines.get(changeId);
-            dao.update(TypeQuery.UPDATE,"updateChangeLines",
-                commitsChangeUpdate(numberLines,changeId),false);       
-        }        
-        connection.commit();
     }
     
 }

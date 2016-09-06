@@ -1,6 +1,5 @@
 package miner.model.dao;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,6 +11,7 @@ import java.util.Map;
 import miner.model.dao.structure.CrudDao;
 import miner.model.dao.structure.DaoFactory;
 import miner.model.dao.structure.ICrudDao;
+import miner.model.dao.structure.JdbcConnection;
 import miner.model.dao.structure.xml.TypeQuery;
 import miner.model.domain.Branch;
 import miner.model.domain.Class;

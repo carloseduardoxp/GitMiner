@@ -109,6 +109,10 @@ public class ImportClassesService {
 			String classPath = commitChange.getLocalPath();
 			String path = commitChange.getCommit().getLocalPathCommits();
 			String fileName = commitChange.getFileName();
+			if (fileName.endsWith(".jar")) {
+				Log.writeLog("Cant analyse jars " + fileName + " - " +classPath);
+				continue;
+			}
 			try {
 				List<String> classNames = analyseCodeLevelModelFromJavaSourceFiles(path, classPath,fileName);
 				if (classNames.isEmpty()) {

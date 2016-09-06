@@ -19,8 +19,9 @@ public class Class {
 
     }
     
-    public Class(Integer id) {
+    public Class(Integer id,String name) {
     	this.id = id;
+    	this.name = name;
     }
 
     public Class(String name, Branch branch) {

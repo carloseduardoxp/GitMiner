@@ -1,17 +1,12 @@
 package miner.model.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import miner.model.dao.DetectedSmellDao;
 import miner.model.dao.ProjectDao;
 import miner.model.dao.structure.DaoFactory;
-import miner.model.dao.structure.JdbcConnection;
 import miner.model.domain.Branch;
 import miner.model.domain.ClassCommitChange;
 import miner.model.domain.Commit;
@@ -20,8 +15,10 @@ import miner.model.domain.DetectedSmell;
 import miner.model.domain.Project;
 import miner.model.domain.SmellEnum;
 import miner.util.Log;
+import miner.util.exception.ValidationException;
 import padl.analysis.repository.AACRelationshipsAnalysis;
 import padl.creator.javafile.eclipse.CompleteJavaFileCreator;
+import padl.kernel.IClass;
 import padl.kernel.ICodeLevelModel;
 import padl.kernel.IIdiomLevelModel;
 import padl.kernel.impl.Factory;
@@ -38,8 +35,6 @@ public class ImportCodeSmellsService {
     private final Observer observer;
     private Project project;
     private final List<SmellEnum> smells;
-    private Map<CommitChange, Set<SmellEnum>> detectedSmells;
-    private Connection connection;
 
     public ImportCodeSmellsService(Observer observer, Project project, List<SmellEnum> smells) {
         detectedSmellDao = DaoFactory.getDetectedSmellDao();
@@ -52,7 +47,6 @@ public class ImportCodeSmellsService {
     public void execute() throws Exception {
         try {
             Log.writeLog(project.getName(), "ImportSmells", "Starting Import Smells of Project " + project.getName());
-            connection = JdbcConnection.getConnection();
             Log.writeLog("Mounting Project (branches, commits and commit changes) " + project.getName());
             observer.sendStatusMessage("Mounting Project (branches, commits and commit changes) " + project.getName());
             project = projectDao.mountProject(project);
@@ -60,24 +54,15 @@ public class ImportCodeSmellsService {
                 analyseBranch(branch);
             }
             Log.writeLog("Done.");
-            connection.commit();
         } catch (Exception e) {
             e.printStackTrace();
             Log.writeLog("Error Exception ocurred " + e.getMessage());
-            try {
-                connection.rollback();
-                connection.close();
-            } catch (SQLException ex) {
-                System.err.println("Cant rollback or close connection " + ex);
-                ex.printStackTrace();
-            }
             throw new Exception(e);
         }
     }
 
     private void analyseBranch(Branch branch) throws Exception {
         Log.writeLog("Analysing branch " + branch.getName());
-        this.detectedSmells = new HashMap<>();
         List<Commit> commits = branch.getCommits();
         if (commits.isEmpty()) {
         	Log.writeLog("Branch "+branch.getName()+" dont have commits");
@@ -96,35 +81,41 @@ public class ImportCodeSmellsService {
                 notifyObservers(totalCommits, i);
             }
         }
-        notifyObservers(totalCommits, i);
-        detectedSmellDao.insertDetectedSmells(detectedSmells, connection);
+        notifyObservers(totalCommits, i);        
     }
+    
+    private void analyseCommit(Commit commit) throws ValidationException, IOException, Exception {
+		Log.writeLog("Analysing commit " + commit.getHash());
+		if (commit.getChanges().isEmpty()) {
+			Log.writeLog("Commit " + commit.getHash()+" dont have changes");
+			return;
+		}
+		IIdiomLevelModel iIdiomLevelModel = analyseCodeLevelModelFromJavaSourceFiles(commit.getLocalPath(),commit.getLocalPath(),commit.getHash());
+		List<DetectedSmell> smells = analyseCodeLevelModel(iIdiomLevelModel,commit);
+		if (!smells.isEmpty()) {
+			detectedSmellDao.insertDetectedSmells(smells);	
+		}				
+	}
 
-    private void analyseCommit(Commit commit) throws Exception {
-        Log.writeLog("Analysing commit " + commit.getHash());
-        final CompleteJavaFileCreator creator = new CompleteJavaFileCreator(
-                new String[]{commit.getLocalPath()}, new String[]{""},
-                new String[]{commit.getLocalPath()});
-        final ICodeLevelModel codeLevelModel = Factory.getInstance()
-                .createCodeLevelModel(commit.getHash());
-        codeLevelModel.create(creator);
+	public IIdiomLevelModel analyseCodeLevelModelFromJavaSourceFiles(String path, String classPath,String name) throws Exception {		
+		final CompleteJavaFileCreator creator = new CompleteJavaFileCreator(new String[] { path }, new String[] { "" },
+				new String[] { classPath });
+		final ICodeLevelModel codeLevelModel = Factory.getInstance().createCodeLevelModel(name);
+		codeLevelModel.create(creator);
+		final padl.creator.javafile.eclipse.astVisitors.LOCModelAnnotator annotator2 = new padl.creator.javafile.eclipse.astVisitors.LOCModelAnnotator(
+				codeLevelModel);
+		creator.applyAnnotator(annotator2);
 
-        // try {
-        final padl.creator.javafile.eclipse.astVisitors.LOCModelAnnotator annotator2 = new padl.creator.javafile.eclipse.astVisitors.LOCModelAnnotator(
-                codeLevelModel);
-        creator.applyAnnotator(annotator2);
+		final padl.creator.javafile.eclipse.astVisitors.ConditionalModelAnnotator annotator1 = new padl.creator.javafile.eclipse.astVisitors.ConditionalModelAnnotator(
+				codeLevelModel);
+		creator.applyAnnotator(annotator1);
 
-        final padl.creator.javafile.eclipse.astVisitors.ConditionalModelAnnotator annotator1 = new padl.creator.javafile.eclipse.astVisitors.ConditionalModelAnnotator(
-                codeLevelModel);
-        creator.applyAnnotator(annotator1);
+		return (IIdiomLevelModel) new AACRelationshipsAnalysis()
+				.invoke(codeLevelModel);
+	}
 
-        final IIdiomLevelModel idiomLevelModel = (IIdiomLevelModel) new AACRelationshipsAnalysis()
-                .invoke(codeLevelModel);
-
-        analyseCodeLevelModel(idiomLevelModel, commit);
-    }
-
-    public final void analyseCodeLevelModel(final IIdiomLevelModel idiomLevelModel, Commit commit) throws Exception {
+    public final List<DetectedSmell> analyseCodeLevelModel(final IIdiomLevelModel idiomLevelModel, Commit commit) throws Exception {
+    	List<DetectedSmell> smellArquivo = new ArrayList<>();
         try {
             for (int i = 0; i < smells.size(); i++) {
                 final String antipatternName = smells.get(i).toString();
@@ -136,8 +127,7 @@ public class ImportCodeSmellsService {
                 final IDesignSmellDetection detection = (IDesignSmellDetection) detectionClass
                         .newInstance();
 
-                detection.detect(idiomLevelModel);
-                List<DetectedSmell> smellArquivo = new ArrayList<>();
+                detection.detect(idiomLevelModel);                
                 for (Object s : detection.getDesignSmells()) {
                     DesignSmell ds = (DesignSmell) s;
                     for (Object o : ds.listOfCodeSmells()) {
@@ -147,18 +137,18 @@ public class ImportCodeSmellsService {
                             smellArquivo.add(sa);
                         }
                     }
-                }
-                //detectedSmells.put(key, value);
+                }                
             }
         } catch (final Exception e) {
             e.printStackTrace();
             throw e;
         }
+        return smellArquivo;
     }
 
     private DetectedSmell processa(ICodeSmell cs, String name, Commit commit) throws Exception {
         if (cs instanceof CodeSmell) {
-            return new DetectedSmell(SmellEnum.getSmellName(name), new ClassCommitChange(null, null));
+            return new DetectedSmell(SmellEnum.getSmellName(name),getClassCommitChange(commit.getChanges(), cs.getIClass()) );
         } else if (cs instanceof CodeSmellComposite) {
             CodeSmellComposite co = (CodeSmellComposite) cs;
             for (Object o : co.getSetOfCodeSmellsOfGeneric()) {
@@ -168,6 +158,18 @@ public class ImportCodeSmellsService {
         }
         throw new Exception("Cant find cs instance " + cs);
     }
+    
+	private static ClassCommitChange getClassCommitChange(List<CommitChange> changes, IClass aClass) throws ValidationException {
+		for (CommitChange change: changes) {
+			for (ClassCommitChange classChange: change.getClassCommitchange()) {				
+				if (classChange.getJavaClass().getName().equals(aClass.getDisplayID())) {
+					return classChange;
+				}
+ 			}
+		}
+		throw new ValidationException("Cant found class "+aClass.getDisplayID());
+	}
+
 
     private void notifyObservers(int totalCommits, int commitsPerformed) {
         Double d = new Double(commitsPerformed) / new Double(totalCommits);

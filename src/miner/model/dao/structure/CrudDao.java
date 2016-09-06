@@ -17,7 +17,7 @@ import miner.util.exception.ConnectionException;
 
 public class CrudDao implements ICrudDao {
 
-    private final Connection connection;
+    private Connection connection;
 
     public CrudDao(Connection connection) {
         this.connection = connection;
@@ -144,5 +144,11 @@ public class CrudDao implements ICrudDao {
             }
         }
     }
+
+	@Override
+	public void rebootConnection() throws SQLException,ConnectionException {
+		connection.close();
+		connection = JdbcConnection.getConnection();		
+	}
 
 }

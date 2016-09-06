@@ -28,4 +28,6 @@ public interface ICrudDao {
     void updateBatch(TypeQuery type, String query, List<Map<Integer, Object>> parameters) throws ConnectionException;    
     
     void executeSqlScript(InputStream in) throws SQLException;
+    
+    void rebootConnection() throws SQLException,ConnectionException;
 }

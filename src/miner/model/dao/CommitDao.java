@@ -69,7 +69,12 @@ public class CommitDao {
     public List<Commit> mountCommits(Branch branch,ICrudDao dao) throws ValidationException,SQLException,ConnectionException {
         CommitChangeDao commitChangeDao = DaoFactory.getCommitChangeDao();
         List<Commit> commits = getCommits(branch,dao);
+        int i = 0;
         for (Commit commit: commits) {
+        	i++;
+        	if (i % 1000 == 0) {
+        		dao.rebootConnection();
+        	}
             commit.setChanges(commitChangeDao.mountChanges(commit,dao));
         }
         return commits;
