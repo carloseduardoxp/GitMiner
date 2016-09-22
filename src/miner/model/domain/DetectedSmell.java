@@ -13,11 +13,6 @@ public class DetectedSmell {
     public DetectedSmell() {
     }    
 
-    public DetectedSmell(SmellEnum smell, ClassCommitChange change) {
-        this.smell = smell;
-        this.change = change;
-    }
-
     public DetectedSmell(SmellEnum smell, ClassCommitChange change,String obs) {
         this.smell = smell;
         this.change = change;

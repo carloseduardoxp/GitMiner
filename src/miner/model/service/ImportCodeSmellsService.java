@@ -127,7 +127,7 @@ public class ImportCodeSmellsService {
                 final IDesignSmellDetection detection = (IDesignSmellDetection) detectionClass
                         .newInstance();
 
-                detection.detect(idiomLevelModel);                
+                detection.detect(idiomLevelModel);                 
                 for (Object s : detection.getDesignSmells()) {
                     DesignSmell ds = (DesignSmell) s;
                     for (Object o : ds.listOfCodeSmells()) {
@@ -148,7 +148,7 @@ public class ImportCodeSmellsService {
 
     private DetectedSmell processa(ICodeSmell cs, String name, Commit commit) throws Exception {
         if (cs instanceof CodeSmell) {
-            return new DetectedSmell(SmellEnum.getSmellName(name),getClassCommitChange(commit.getChanges(), cs.getIClass()) );
+            return new DetectedSmell(SmellEnum.getSmellName(name),getClassCommitChange(commit.getChanges(), cs.getIClass()),cs.toString() );
         } else if (cs instanceof CodeSmellComposite) {
             CodeSmellComposite co = (CodeSmellComposite) cs;
             for (Object o : co.getSetOfCodeSmellsOfGeneric()) {

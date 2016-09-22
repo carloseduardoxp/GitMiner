@@ -23,8 +23,6 @@ import miner.util.exception.ValidationException;
 
 public class ClassCommitChangeDao {
 	
-	private static int i = 0;
-	
 	public void save(List<ClassCommitChange> classCommitsChange,Connection jdbc) throws IOException,ConnectionException {
         ICrudDao dao = new CrudDao(jdbc);
         dao.updateBatch(TypeQuery.INSERT,"saveNewClassCommitChange",convertListToParameters(classCommitsChange));       
