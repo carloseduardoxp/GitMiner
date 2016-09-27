@@ -2,6 +2,7 @@ package miner.model.service;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,12 +33,14 @@ public class ImportMetricsService {
 	private final ClassCommitChangeDao classCommitChangeDao;
 	private final Observer observer;
 	private Project project;
+	private CurrentClasses currentClasses;
 
 	public ImportMetricsService(Observer observer, Project project) {
 		classCommitChangeDao = DaoFactory.getClassCommitChangeDao();
 		projectDao = DaoFactory.getProjectDao();
 		this.observer = observer;
 		this.project = project;
+		this.currentClasses = new CurrentClasses();
 	}
 
 	public void execute() throws Exception {
@@ -91,14 +94,20 @@ public class ImportMetricsService {
 			Log.writeLog("Commit " + commit.getHash()+" dont have changes");
 			return;
 		}
-		IIdiomLevelModel iIdiomLevelModel = analyseCodeLevelModelFromJavaSourceFiles(commit.getLocalPath(),commit.getLocalPath(),commit.getHash());
+		boolean isChangeAnyone = currentClasses.addCommit(commit);
+		if (currentClasses.getPaths().length == 0 || !isChangeAnyone) {
+			System.out.println("Commit "+ commit.getHash()+" dont have changes in analysed classes");
+			return;
+		}
+		System.out.println("Irá avaliar "+currentClasses.getPaths().length+" do commit "+commit.getHash());
+		IIdiomLevelModel iIdiomLevelModel = analyseCodeLevelModelFromJavaSourceFiles(commit.getBranch().getLocalPathCommits(),commit.getHash());
 		getMetrics(commit,iIdiomLevelModel);
 		classCommitChangeDao.updateMetrics(commit);		
 	}
 
-	public IIdiomLevelModel analyseCodeLevelModelFromJavaSourceFiles(String path, String classPath,String name) throws Exception {		
+	public IIdiomLevelModel analyseCodeLevelModelFromJavaSourceFiles(String path,String name) throws Exception {		
 		final CompleteJavaFileCreator creator = new CompleteJavaFileCreator(new String[] { path }, new String[] { "" },
-				new String[] { classPath });
+				currentClasses.getPaths());
 		final ICodeLevelModel codeLevelModel = Factory.getInstance().createCodeLevelModel(name);
 		codeLevelModel.create(creator);
 		final padl.creator.javafile.eclipse.astVisitors.LOCModelAnnotator annotator2 = new padl.creator.javafile.eclipse.astVisitors.LOCModelAnnotator(
@@ -113,13 +122,17 @@ public class ImportMetricsService {
 				.invoke(codeLevelModel);
 	}
 
-	private static void getMetrics(Commit commit,IIdiomLevelModel iIdiomLevelModel) throws ValidationException {		
+	private static void getMetrics(Commit commit,IIdiomLevelModel iIdiomLevelModel) throws ValidationException {
+		List<CommitChange> changes = new ArrayList<>(commit.getChanges());
 		final Iterator iter = iIdiomLevelModel.getIteratorOnTopLevelEntities();
 		while (iter.hasNext()) {
 			final IEntity entity = (IEntity) iter.next();
 			if (entity instanceof IClass) {
 				final IClass aClass = (IClass) entity;
-				ClassCommitChange classCommitChange = getClassCommitChange(commit.getChanges(),aClass);
+				ClassCommitChange classCommitChange = getClassCommitChange(changes,aClass);
+				if (classCommitChange == null) {
+					continue;
+				}
 				classCommitChange.setACAIC(((IUnaryMetric) MetricsRepository.getInstance().getMetric("ACAIC")).compute(iIdiomLevelModel, aClass));				
 				classCommitChange.setACMIC(((IUnaryMetric) MetricsRepository.getInstance().getMetric("ACMIC")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setAID(((IUnaryMetric) MetricsRepository.getInstance().getMetric("AID")).compute(iIdiomLevelModel, aClass));
@@ -139,7 +152,9 @@ public class ImportMetricsService {
 				classCommitChange.setEIP(((IUnaryMetric) MetricsRepository.getInstance().getMetric("EIP")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setICH(((IUnaryMetric) MetricsRepository.getInstance().getMetric("ICHClass")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setIR(((IUnaryMetric) MetricsRepository.getInstance().getMetric("IR")).compute(iIdiomLevelModel, aClass));
-				classCommitChange.setLCOM(((IUnaryMetric) MetricsRepository.getInstance().getMetric("LCOM5")).compute(iIdiomLevelModel, aClass));
+				classCommitChange.setLCOM1(((IUnaryMetric) MetricsRepository.getInstance().getMetric("LCOM1")).compute(iIdiomLevelModel, aClass));
+				classCommitChange.setLCOM2(((IUnaryMetric) MetricsRepository.getInstance().getMetric("LCOM2")).compute(iIdiomLevelModel, aClass));
+				classCommitChange.setLCOM5(((IUnaryMetric) MetricsRepository.getInstance().getMetric("LCOM5")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setLOC(((IUnaryMetric) MetricsRepository.getInstance().getMetric("LOC")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setMcCabe(((IUnaryMetric) MetricsRepository.getInstance().getMetric("McCabe")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setMFA(((IUnaryMetric) MetricsRepository.getInstance().getMetric("MFA")).compute(iIdiomLevelModel, aClass));
@@ -162,33 +177,35 @@ public class ImportMetricsService {
 				classCommitChange.setNOTC(((IUnaryMetric) MetricsRepository.getInstance().getMetric("NOTC")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setNOTI(((IUnaryMetric) MetricsRepository.getInstance().getMetric("NOTI")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setNPrM(((IUnaryMetric) MetricsRepository.getInstance().getMetric("NPrM")).compute(iIdiomLevelModel, aClass));
-				classCommitChange.setNg(null);
-				classCommitChange.setOneWay(null);
 				classCommitChange.setPIIR(((IUnaryMetric) MetricsRepository.getInstance().getMetric("PIIR")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setPP(((IUnaryMetric) MetricsRepository.getInstance().getMetric("PP")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setREIP(((IUnaryMetric) MetricsRepository.getInstance().getMetric("REIP")).compute(iIdiomLevelModel, aClass));			
 				classCommitChange.setRFC(((IUnaryMetric) MetricsRepository.getInstance().getMetric("RFC")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setRFP(((IUnaryMetric) MetricsRepository.getInstance().getMetric("RFP")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setRPII(((IUnaryMetric) MetricsRepository.getInstance().getMetric("RPII")).compute(iIdiomLevelModel, aClass));
-				classCommitChange.setRRFP(null);
-				classCommitChange.setRRTP(null);
+				//classCommitChange.setRRFP(((IUnaryMetric) MetricsRepository.getInstance().getMetric("RRFP")).compute(iIdiomLevelModel, aClass)); //lento
+				//classCommitChange.setRRTP(((IUnaryMetric) MetricsRepository.getInstance().getMetric("RRTP")).compute(iIdiomLevelModel, aClass)); //lento
 				classCommitChange.setRTP(((IUnaryMetric) MetricsRepository.getInstance().getMetric("RTP")).compute(iIdiomLevelModel, aClass));
 				classCommitChange.setSIX(((IUnaryMetric) MetricsRepository.getInstance().getMetric("SIX")).compute(iIdiomLevelModel, aClass));
-				classCommitChange.setWMC(((IUnaryMetric) MetricsRepository.getInstance().getMetric("WMC")).compute(iIdiomLevelModel, aClass));				
+				classCommitChange.setWMC(((IUnaryMetric) MetricsRepository.getInstance().getMetric("WMC")).compute(iIdiomLevelModel, aClass));	
 			}
 		}
-		
+//		if (changes.size() > 0) {
+//			throw new ValidationException("Cant found classes "+changes);
+//		}
 	}
 
 	private static ClassCommitChange getClassCommitChange(List<CommitChange> changes, IClass aClass) throws ValidationException {
 		for (CommitChange change: changes) {
 			for (ClassCommitChange classChange: change.getClassCommitchange()) {				
 				if (classChange.getJavaClass().getName().equals(aClass.getDisplayID())) {
+					changes.remove(classChange);
 					return classChange;
 				}
  			}
 		}
-		throw new ValidationException("Cant found class "+aClass.getDisplayID());
+		return null;
+		//throw new ValidationException("Cant found class "+aClass.getDisplayID()+" in changes "+changes);
 	}
 
 }

@@ -40,6 +40,8 @@ public class ImportClassesService {
 	private Map<miner.model.domain.Class,List<CommitChange>> classCommitChanges;
 	private Connection connection;
 	private List<String> filters;
+	private List<String> interfaces;
+	private List<String> enums;
 
 	public ImportClassesService(Observer observer, Project project,List<String> filters) {
 		classDao = DaoFactory.getClassDao();
@@ -47,6 +49,8 @@ public class ImportClassesService {
 		this.observer = observer;
 		this.project = project;
 		this.filters = filters;
+		this.interfaces = new ArrayList<>();
+		this.enums = new ArrayList<>();
 	}
 
 	public void execute() throws Exception {
@@ -124,7 +128,7 @@ public class ImportClassesService {
 				}
 				for (String className: classNames) {
 					miner.model.domain.Class javaClass = 
-							new miner.model.domain.Class(className,commit.getBranch(),analyseClass(fileName));					
+							new miner.model.domain.Class(className,commit.getBranch(),analyseClass(fileName),interfaces.contains(className),enums.contains(className));					
 					if (classCommitChanges.containsKey(javaClass)) {
 						List<CommitChange> changes = classCommitChanges.get(javaClass);
 						changes.add(commitChange);
@@ -179,9 +183,11 @@ public class ImportClassesService {
 				classNames.add(aClass.getDisplayID());	
 			} else if (entity instanceof IEnum) {
 				IEnum aEnum = (IEnum) entity;
+				enums.add(aEnum.getDisplayID());
 				classNames.add(aEnum.getDisplayID());						
 			} else if (entity instanceof IInterface) {
 				IInterface aInterface = (IInterface) entity;
+				interfaces.add(aInterface.getDisplayID());
 				classNames.add(aInterface.getDisplayID());
 			} 
 			

@@ -12,6 +12,10 @@ public class Class {
     private boolean analyse;
 
     private Branch branch;
+    
+    private boolean contentInterface;
+    
+    private boolean contentEnum;
 
     private List<ClassCommitChange> changes;
 
@@ -21,16 +25,20 @@ public class Class {
 
     }
     
-    public Class(Integer id,String name,Boolean analyse) {
+    public Class(Integer id,String name,Boolean analyse,boolean contentInterface,boolean contentEnum) {
     	this.id = id;
     	this.name = name;
     	this.analyse = analyse;
+    	this.contentEnum = contentEnum;
+    	this.contentInterface = contentInterface;
     }
 
-    public Class(String name, Branch branch,Boolean analyse) {
+    public Class(String name, Branch branch,Boolean analyse,boolean contentInterface,boolean contentEnum) {
         this.name = name;
         this.branch = branch;
         this.analyse = analyse;
+    	this.contentEnum = contentEnum;
+    	this.contentInterface = contentInterface;
     }        
 
     public Integer getId() {
@@ -80,6 +88,22 @@ public class Class {
 
 	public void setAnalyse(boolean analyse) {
 		this.analyse = analyse;
+	}
+
+	public boolean isContentInterface() {
+		return contentInterface;
+	}
+
+	public void setContentInterface(boolean contentInterface) {
+		this.contentInterface = contentInterface;
+	}
+
+	public boolean isContentEnum() {
+		return contentEnum;
+	}
+
+	public void setContentEnum(boolean contentEnum) {
+		this.contentEnum = contentEnum;
 	}
 
 	@Override

@@ -27,7 +27,9 @@ public class ClassCommitChange {
 	private Double EIP;
 	private Double ICH;
 	private Double IR;
-	private Double LCOM;
+	private Double LCOM1;
+	private Double LCOM2;
+	private Double LCOM5;
 	private Double LOC;
 	private Double McCabe;
 	private Double MFA;
@@ -50,8 +52,6 @@ public class ClassCommitChange {
 	private Double NOTC;
 	private Double NOTI;
 	private Double NPrM;
-	private Double OneWay;
-	private Double ng;
 	private Double PIIR;
 	private Double PP;
 	private Double REIP;
@@ -198,12 +198,30 @@ public class ClassCommitChange {
 	public void setIR(Double iR) {
 		IR = iR;
 	}
-	public Double getLCOM() {
-		return LCOM;
+	public Double getLCOM1() {
+		return LCOM1;
 	}
-	public void setLCOM(Double lCOM) {
-		LCOM = lCOM;
+
+	public void setLCOM1(Double lCOM1) {
+		LCOM1 = lCOM1;
 	}
+
+	public Double getLCOM2() {
+		return LCOM2;
+	}
+
+	public void setLCOM2(Double lCOM2) {
+		LCOM2 = lCOM2;
+	}
+
+	public Double getLCOM5() {
+		return LCOM5;
+	}
+
+	public void setLCOM5(Double lCOM5) {
+		LCOM5 = lCOM5;
+	}
+
 	public Double getLOC() {
 		return LOC;
 	}
@@ -336,18 +354,7 @@ public class ClassCommitChange {
 	public void setNPrM(Double nPrM) {
 		NPrM = nPrM;
 	}
-	public Double getOneWay() {
-		return OneWay;
-	}
-	public void setOneWay(Double oneWay) {
-		OneWay = oneWay;
-	}
-	public Double getNg() {
-		return ng;
-	}
-	public void setNg(Double ng) {
-		this.ng = ng;
-	}
+
 	public Double getPIIR() {
 		return PIIR;
 	}
@@ -422,6 +429,38 @@ public class ClassCommitChange {
     public void setSmells(List<DetectedSmell> smells) {
         this.smells = smells;
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((commitChange == null) ? 0 : commitChange.hashCode());
+		result = prime * result + ((javaClass == null) ? 0 : javaClass.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ClassCommitChange other = (ClassCommitChange) obj;
+		if (commitChange == null) {
+			if (other.commitChange != null)
+				return false;
+		} else if (!commitChange.equals(other.commitChange))
+			return false;
+		if (javaClass == null) {
+			if (other.javaClass != null)
+				return false;
+		} else if (!javaClass.equals(other.javaClass))
+			return false;
+		return true;
+	}
 	
+    
 
 }

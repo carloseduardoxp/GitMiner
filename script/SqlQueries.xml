@@ -22,24 +22,17 @@
                 DS_FULL_MESSAGE,DS_SHORT_MESSAGE,CD_BRANCH
                 FROM TB_COMMIT C                           
                 WHERE C.CD_BRANCH = ?
+                ORDER BY C.DT_COMMITTER_DATE ASC
                  <!-- AND C.DS_HASH IN (SELECT DS_HASH FROM TB_COMMIT_CHANGE WHERE CD_COMMIT_CHANGE IN (SELECT CD_COMMIT_CHANGE FROM TB_CLASS_COMMIT_CHANGE WHERE LOC IS NULL)) -->  
             </query>
         </sql>	   
         <sql name="classesWithoutChanges">
             <query>	
-                SELECT CD_CLASS,NM_CLASS
+                SELECT CD_CLASS,NM_CLASS,FL_ANALYSE,FL_INTERFACE,FL_ENUM
                 FROM TB_CLASS
                 WHERE CD_BRANCH = ?  
             </query>
-        </sql>
-        
-        <sql name="classesId">
-            <query>	
-                SELECT CD_CLASS,NM_CLASS,FL_ANALYSE
-                FROM TB_CLASS
-                WHERE CD_CLASS = ?  
-            </query>
-        </sql>	 
+        </sql>       
         	 
         <sql name="changeCommitsByCommit">
             <query>	
@@ -54,6 +47,8 @@
 					    `TB_CLASS_COMMIT_CHANGE`.`CD_CLASS`,
 					    (select NM_CLASS FROM TB_CLASS WHERE CD_CLASS = `TB_CLASS_COMMIT_CHANGE`.`CD_CLASS`) AS NM_CLASS,		    					    
 					    (select FL_ANALYSE FROM TB_CLASS WHERE CD_CLASS = `TB_CLASS_COMMIT_CHANGE`.`CD_CLASS`) AS FL_ANALYSE,
+					    (select FL_INTERFACE FROM TB_CLASS WHERE CD_CLASS = `TB_CLASS_COMMIT_CHANGE`.`CD_CLASS`) AS FL_INTERFACE,
+					    (select FL_ENUM FROM TB_CLASS WHERE CD_CLASS = `TB_CLASS_COMMIT_CHANGE`.`CD_CLASS`) AS FL_ENUM,
 					    `TB_CLASS_COMMIT_CHANGE`.`ACAIC`,
 					    `TB_CLASS_COMMIT_CHANGE`.`ACMIC`,
 					    `TB_CLASS_COMMIT_CHANGE`.`AID`,
@@ -73,7 +68,9 @@
 					    `TB_CLASS_COMMIT_CHANGE`.`EIP`,
 					    `TB_CLASS_COMMIT_CHANGE`.`ICH`,
 					    `TB_CLASS_COMMIT_CHANGE`.`IR`,
-					    `TB_CLASS_COMMIT_CHANGE`.`LCOM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`LCOM1`,
+					    `TB_CLASS_COMMIT_CHANGE`.`LCOM2`,
+					    `TB_CLASS_COMMIT_CHANGE`.`LCOM5`,
 					    `TB_CLASS_COMMIT_CHANGE`.`LOC`,
 					    `TB_CLASS_COMMIT_CHANGE`.`McCabe`,
 					    `TB_CLASS_COMMIT_CHANGE`.`MFA`,
@@ -96,8 +93,6 @@
 					    `TB_CLASS_COMMIT_CHANGE`.`NOTC`,
 					    `TB_CLASS_COMMIT_CHANGE`.`NOTI`,
 					    `TB_CLASS_COMMIT_CHANGE`.`NPrM`,
-					    `TB_CLASS_COMMIT_CHANGE`.`OneWay`,
-					    `TB_CLASS_COMMIT_CHANGE`.`ng`,
 					    `TB_CLASS_COMMIT_CHANGE`.`PIIR`,
 					    `TB_CLASS_COMMIT_CHANGE`.`PP`,
 					    `TB_CLASS_COMMIT_CHANGE`.`REIP`,
@@ -136,7 +131,9 @@
 					    `TB_CLASS_COMMIT_CHANGE`.`EIP`,
 					    `TB_CLASS_COMMIT_CHANGE`.`ICH`,
 					    `TB_CLASS_COMMIT_CHANGE`.`IR`,
-					    `TB_CLASS_COMMIT_CHANGE`.`LCOM`,
+					    `TB_CLASS_COMMIT_CHANGE`.`LCOM1`,
+					    `TB_CLASS_COMMIT_CHANGE`.`LCOM2`,
+					    `TB_CLASS_COMMIT_CHANGE`.`LCOM5`,
 					    `TB_CLASS_COMMIT_CHANGE`.`LOC`,
 					    `TB_CLASS_COMMIT_CHANGE`.`McCabe`,
 					    `TB_CLASS_COMMIT_CHANGE`.`MFA`,
@@ -159,8 +156,6 @@
 					    `TB_CLASS_COMMIT_CHANGE`.`NOTC`,
 					    `TB_CLASS_COMMIT_CHANGE`.`NOTI`,
 					    `TB_CLASS_COMMIT_CHANGE`.`NPrM`,
-					    `TB_CLASS_COMMIT_CHANGE`.`OneWay`,
-					    `TB_CLASS_COMMIT_CHANGE`.`ng`,
 					    `TB_CLASS_COMMIT_CHANGE`.`PIIR`,
 					    `TB_CLASS_COMMIT_CHANGE`.`PP`,
 					    `TB_CLASS_COMMIT_CHANGE`.`REIP`,
@@ -242,7 +237,7 @@
         
         <sql name="saveNewClass">
             <query>	            
-                INSERT INTO TB_CLASS (NM_CLASS,CD_BRANCH,FL_ANALYSE) VALUES (?,?,?)
+                INSERT INTO TB_CLASS (NM_CLASS,CD_BRANCH,FL_ANALYSE,FL_INTERFACE,FL_ENUM) VALUES (?,?,?,?,?)
             </query>
         </sql>        
         
@@ -277,7 +272,9 @@
 					    `TB_CLASS_COMMIT_CHANGE`.`EIP` = ?,
 					    `TB_CLASS_COMMIT_CHANGE`.`ICH` = ?,
 					    `TB_CLASS_COMMIT_CHANGE`.`IR` = ?,
-					    `TB_CLASS_COMMIT_CHANGE`.`LCOM` = ?,
+					    `TB_CLASS_COMMIT_CHANGE`.`LCOM1` = ?,
+					    `TB_CLASS_COMMIT_CHANGE`.`LCOM2` = ?,
+					    `TB_CLASS_COMMIT_CHANGE`.`LCOM5` = ?,
 					    `TB_CLASS_COMMIT_CHANGE`.`LOC` = ?,
 					    `TB_CLASS_COMMIT_CHANGE`.`McCabe` = ?,
 					    `TB_CLASS_COMMIT_CHANGE`.`MFA` = ?,
@@ -300,8 +297,6 @@
 					    `TB_CLASS_COMMIT_CHANGE`.`NOTC` = ?,
 					    `TB_CLASS_COMMIT_CHANGE`.`NOTI` = ?,
 					    `TB_CLASS_COMMIT_CHANGE`.`NPrM` = ?,
-					    `TB_CLASS_COMMIT_CHANGE`.`OneWay` = ?,
-					    `TB_CLASS_COMMIT_CHANGE`.`ng` = ?,
 					    `TB_CLASS_COMMIT_CHANGE`.`PIIR` = ?,
 					    `TB_CLASS_COMMIT_CHANGE`.`PP` = ?,
 					    `TB_CLASS_COMMIT_CHANGE`.`REIP` = ?,

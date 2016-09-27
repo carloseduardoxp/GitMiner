@@ -38,6 +38,8 @@ public class ClassDao {
             javaClass.setName(rs.getString(2));
             javaClass.setBranch(branch);
             javaClass.setAnalyse(rs.getBoolean(3));
+            javaClass.setContentInterface(rs.getBoolean(4));
+            javaClass.setContentEnum(rs.getBoolean(5));
             classes.add(javaClass);
         }
         return classes;
@@ -83,37 +85,9 @@ public class ClassDao {
         parameters.put(1, javaClass.getName());
         parameters.put(2, javaClass.getBranch().getId());
         parameters.put(3, javaClass.isAnalyse());
+        parameters.put(4, javaClass.isContentInterface());
+        parameters.put(5, javaClass.isContentEnum());
         return parameters;
     }
-
-//    private Integer getClassId(CommitChange change, ICrudDao dao) throws InvalidCodeException,
-//            ConnectionException, SQLException, ValidationException {
-//        Map<Integer, Object> parameters = new HashMap<>();
-//        parameters.put(1, change.getNewFileName());
-//        ResultSet rs = dao.search("classByChange", parameters);
-//        Integer classId = null;
-//        while (rs.next()) {
-//            if (classId == null) {
-//                classId = rs.getInt(1);
-//            } else {
-//                Log.writeLog("WARNING: update classes without code: Filename " + change
-//                        + " has more than one CLASS: " + classId + " and " + rs.getInt(1));
-//                parameters.put(2, change.getId());
-//                rs = dao.search("classByChangeDuplicate", parameters);
-//                if (rs.next()) {
-//                    return rs.getInt(1);
-//                } else {
-//                    throw new ValidationException("Error in update classes without code: Filename " + change
-//                            + " started with duplicate classes, and now has no CLASS");
-//                }
-//            }
-//        }
-//        if (classId == null) {
-//            throw new InvalidCodeException("WARNING: update classes without code: Filename " + change
-//                    + " has no CLASS, but cant found source code in this class");
-//        }
-//        rs.close();
-//        return classId;
-//    }
 
 }
