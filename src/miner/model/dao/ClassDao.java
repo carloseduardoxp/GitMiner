@@ -11,7 +11,6 @@ import java.util.Map;
 import miner.model.dao.structure.CrudDao;
 import miner.model.dao.structure.DaoFactory;
 import miner.model.dao.structure.ICrudDao;
-import miner.model.dao.structure.JdbcConnection;
 import miner.model.dao.structure.xml.TypeQuery;
 import miner.model.domain.Branch;
 import miner.model.domain.Class;
@@ -19,7 +18,6 @@ import miner.model.domain.ClassCommitChange;
 import miner.model.domain.CommitChange;
 import miner.util.Log;
 import miner.util.exception.ConnectionException;
-import miner.util.exception.InvalidCodeException;
 import miner.util.exception.ValidationException;
 
 public class ClassDao {
@@ -39,6 +37,7 @@ public class ClassDao {
             javaClass.setId(rs.getInt(1));
             javaClass.setName(rs.getString(2));
             javaClass.setBranch(branch);
+            javaClass.setAnalyse(rs.getBoolean(3));
             classes.add(javaClass);
         }
         return classes;
@@ -83,37 +82,38 @@ public class ClassDao {
         Map<Integer, Object> parameters = new HashMap<>();
         parameters.put(1, javaClass.getName());
         parameters.put(2, javaClass.getBranch().getId());
+        parameters.put(3, javaClass.isAnalyse());
         return parameters;
     }
 
-    private Integer getClassId(CommitChange change, ICrudDao dao) throws InvalidCodeException,
-            ConnectionException, SQLException, ValidationException {
-        Map<Integer, Object> parameters = new HashMap<>();
-        parameters.put(1, change.getFileName());
-        ResultSet rs = dao.search("classByChange", parameters);
-        Integer classId = null;
-        while (rs.next()) {
-            if (classId == null) {
-                classId = rs.getInt(1);
-            } else {
-                Log.writeLog("WARNING: update classes without code: Filename " + change
-                        + " has more than one CLASS: " + classId + " and " + rs.getInt(1));
-                parameters.put(2, change.getId());
-                rs = dao.search("classByChangeDuplicate", parameters);
-                if (rs.next()) {
-                    return rs.getInt(1);
-                } else {
-                    throw new ValidationException("Error in update classes without code: Filename " + change
-                            + " started with duplicate classes, and now has no CLASS");
-                }
-            }
-        }
-        if (classId == null) {
-            throw new InvalidCodeException("WARNING: update classes without code: Filename " + change
-                    + " has no CLASS, but cant found source code in this class");
-        }
-        rs.close();
-        return classId;
-    }
+//    private Integer getClassId(CommitChange change, ICrudDao dao) throws InvalidCodeException,
+//            ConnectionException, SQLException, ValidationException {
+//        Map<Integer, Object> parameters = new HashMap<>();
+//        parameters.put(1, change.getNewFileName());
+//        ResultSet rs = dao.search("classByChange", parameters);
+//        Integer classId = null;
+//        while (rs.next()) {
+//            if (classId == null) {
+//                classId = rs.getInt(1);
+//            } else {
+//                Log.writeLog("WARNING: update classes without code: Filename " + change
+//                        + " has more than one CLASS: " + classId + " and " + rs.getInt(1));
+//                parameters.put(2, change.getId());
+//                rs = dao.search("classByChangeDuplicate", parameters);
+//                if (rs.next()) {
+//                    return rs.getInt(1);
+//                } else {
+//                    throw new ValidationException("Error in update classes without code: Filename " + change
+//                            + " started with duplicate classes, and now has no CLASS");
+//                }
+//            }
+//        }
+//        if (classId == null) {
+//            throw new InvalidCodeException("WARNING: update classes without code: Filename " + change
+//                    + " has no CLASS, but cant found source code in this class");
+//        }
+//        rs.close();
+//        return classId;
+//    }
 
 }

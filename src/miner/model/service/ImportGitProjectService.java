@@ -9,17 +9,19 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+
 import org.apache.commons.io.FileUtils;
+
 import miner.model.dao.BranchDao;
 import miner.model.dao.CommitChangeDao;
 import miner.model.dao.CommitDao;
 import miner.model.dao.ProjectDao;
 import miner.model.dao.structure.DaoFactory;
 import miner.model.dao.structure.JdbcConnection;
-import miner.model.domain.CommitChange;
 import miner.model.domain.Branch;
 import miner.model.domain.Commit;
 import miner.model.domain.Project;
+import miner.util.GitExtractor;
 import miner.util.Log;
 import miner.util.exception.ValidationException;
 
@@ -61,7 +63,7 @@ public class ImportGitProjectService {
             Log.writeLog("Saving Project in database " + project.getName());
             project = projectDao.save(project, connection);
             Log.writeLog("Looking for branches in Project " + project.getName());
-            List<Branch> branches = Branch.getBranchesProject(project);
+            List<Branch> branches = GitExtractor.getBranchesProject(project);
             if (branches.isEmpty()) {
                 Log.writeLog("Project has no Branches " + project.getName());
                 throw new ValidationException("Project has no Branches");
@@ -106,10 +108,10 @@ public class ImportGitProjectService {
             }
             observer.sendStatusMessage("Downloading branch in " + branch.getLocalPathDownloads());
             Log.writeLog("Downloading branch in " + branch.getLocalPathDownloads());
-            branch.downloadBranch();
+            GitExtractor.downloadBranch(branch);
         }
         Log.writeLog("Looking for commits in Branch " + branch.getName());
-        List<Commit> commits = Commit.getCommits(branch);
+        List<Commit> commits = GitExtractor.getCommits(branch);
         int totalCommits = commits.size();
         Log.writeLog("Find " + totalCommits + "commits in Branch " + branch.getName());
         Log.writeLog("Saving all commits");
@@ -120,7 +122,8 @@ public class ImportGitProjectService {
             onePorcent = totalCommits / 100;
         }
         for (Commit commit : commits) {
-            importCommitChanges(commit);
+        	Log.writeLog("Saving changes");
+            commitChangeDao.save(commit.getChanges(), connection);
             i++;
             if ((i % onePorcent == 0)) {
                 notifyObservers(totalCommits, i);
@@ -128,14 +131,6 @@ public class ImportGitProjectService {
         }
         notifyObservers(totalCommits, i);
         Log.writeLog("Finished import branch " + branch.getName());
-    }
-
-    private void importCommitChanges(Commit commit) throws Exception {
-        Log.writeLog("Looking for changes in Commit " + commit.getHash());
-        List<CommitChange> changes = CommitChange.getChanges(commit);
-        Log.writeLog("Find " + changes + " changes in Commit " + commit.getHash());
-        Log.writeLog("Saving changes");
-        commitChangeDao.save(changes, connection);
     }
 
     private void notifyObservers(int totalCommits, int commitsPerformed) {

@@ -17,8 +17,9 @@
             </query>
         </sql>	
         <sql name="commitsWithoutChanges">
-            <query>	
-                SELECT C.DS_HASH,C.DT_COMMIT,C.NM_AUTHOR,C.DS_EMAIL_AUTHOR,C.DS_SUBJECT
+            <query>
+                SELECT DS_HASH,DS_AUTHOR_NAME,DS_AUTHOR_EMAIL,DT_AUTHOR_DATE,DS_COMMITTER_NAME,DS_COMMITTER_EMAIL,DT_COMMITTER_DATE,
+                DS_FULL_MESSAGE,DS_SHORT_MESSAGE,CD_BRANCH
                 FROM TB_COMMIT C                           
                 WHERE C.CD_BRANCH = ?
                  <!-- AND C.DS_HASH IN (SELECT DS_HASH FROM TB_COMMIT_CHANGE WHERE CD_COMMIT_CHANGE IN (SELECT CD_COMMIT_CHANGE FROM TB_CLASS_COMMIT_CHANGE WHERE LOC IS NULL)) -->  
@@ -34,7 +35,7 @@
         
         <sql name="classesId">
             <query>	
-                SELECT CD_CLASS,NM_CLASS
+                SELECT CD_CLASS,NM_CLASS,FL_ANALYSE
                 FROM TB_CLASS
                 WHERE CD_CLASS = ?  
             </query>
@@ -42,7 +43,7 @@
         	 
         <sql name="changeCommitsByCommit">
             <query>	
-                SELECT CC.CD_COMMIT_CHANGE,CC.DS_MODIFICATION_TYPE,CC.NM_FILE
+                SELECT CC.CD_COMMIT_CHANGE,CC.DS_CHANGE_TYPE,NM_OLD_FILENAME,NM_NEW_FILENAME
                 FROM TB_COMMIT_CHANGE CC
                 WHERE CC.DS_HASH = ?
             </query>
@@ -52,6 +53,7 @@
                 SELECT `TB_CLASS_COMMIT_CHANGE`.`CD_COMMIT_CHANGE`,
 					    `TB_CLASS_COMMIT_CHANGE`.`CD_CLASS`,
 					    (select NM_CLASS FROM TB_CLASS WHERE CD_CLASS = `TB_CLASS_COMMIT_CHANGE`.`CD_CLASS`) AS NM_CLASS,		    					    
+					    (select FL_ANALYSE FROM TB_CLASS WHERE CD_CLASS = `TB_CLASS_COMMIT_CHANGE`.`CD_CLASS`) AS FL_ANALYSE,
 					    `TB_CLASS_COMMIT_CHANGE`.`ACAIC`,
 					    `TB_CLASS_COMMIT_CHANGE`.`ACMIC`,
 					    `TB_CLASS_COMMIT_CHANGE`.`AID`,
@@ -220,17 +222,17 @@
         
         <sql name="saveNewCommit">
             <query>	
-                INSERT INTO TB_COMMIT (DS_HASH,DT_COMMIT,NM_AUTHOR,
-                DS_EMAIL_AUTHOR,DS_SUBJECT,CD_BRANCH) VALUES (?,?,?,?,?,?)
+                INSERT INTO TB_COMMIT (DS_HASH,DS_AUTHOR_NAME,DS_AUTHOR_EMAIL,DT_AUTHOR_DATE,DS_COMMITTER_NAME,DS_COMMITTER_EMAIL,DT_COMMITTER_DATE,
+                DS_FULL_MESSAGE,DS_SHORT_MESSAGE,CD_BRANCH) VALUES (?,?,?,?,?,?,?,?,?,?)                
             </query>		
         </sql>
         
         <sql name="saveNewCommitChange">
             <query>	
-                INSERT INTO TB_COMMIT_CHANGE (DS_MODIFICATION_TYPE,NM_FILE,
-                DS_HASH) VALUES (?,?,?)
+                INSERT INTO TB_COMMIT_CHANGE (DS_CHANGE_TYPE,NM_OLD_FILENAME,NM_NEW_FILENAME,
+                DS_HASH) VALUES (?,?,?,?)
             </query>		
-        </sql>
+        </sql>               
         
         <sql name="saveNewClassCommitChange">
             <query>	
@@ -240,7 +242,7 @@
         
         <sql name="saveNewClass">
             <query>	            
-                INSERT INTO TB_CLASS (NM_CLASS,CD_BRANCH) VALUES (?,?)
+                INSERT INTO TB_CLASS (NM_CLASS,CD_BRANCH,FL_ANALYSE) VALUES (?,?,?)
             </query>
         </sql>        
         

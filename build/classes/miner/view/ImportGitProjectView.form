@@ -89,10 +89,9 @@
                           <Component id="chkDropBranch" min="-2" max="-2" attributes="0"/>
                           <Component id="chkImportOnlyMasterBranch" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="btnImport" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblMessage" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="prbImport" alignment="0" min="-2" pref="636" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="24" max="32767" attributes="0"/>
+                      <EmptySpace pref="27" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -120,9 +119,7 @@
                       <Component id="chkImportOnlyMasterBranch" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnImport" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lblMessage" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
                       <Component id="lblMsg" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="prbImport" min="-2" max="-2" attributes="0"/>
@@ -144,11 +141,6 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnImportActionPerformed"/>
               </Events>
-            </Component>
-            <Component class="javax.swing.JLabel" name="lblMessage">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="To work, you must run in Linux and have installed git. In Ubuntu, try:  sudo apt-get install git"/>
-              </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="lblName">
               <Properties>

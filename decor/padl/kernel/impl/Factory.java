@@ -13,6 +13,7 @@ package padl.kernel.impl;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
 import padl.event.EventGenerator;
 import padl.kernel.Constants;
 import padl.kernel.IAggregation;
@@ -26,6 +27,7 @@ import padl.kernel.IContainerComposition;
 import padl.kernel.ICreation;
 import padl.kernel.IDelegatingMethod;
 import padl.kernel.IEntity;
+import padl.kernel.IEnum;
 import padl.kernel.IFactory;
 import padl.kernel.IField;
 import padl.kernel.IFirstClassEntity;
@@ -34,6 +36,7 @@ import padl.kernel.IGhost;
 import padl.kernel.IIdiomLevelModel;
 import padl.kernel.IInterface;
 import padl.kernel.IMemberClass;
+import padl.kernel.IMemberEnum;
 import padl.kernel.IMemberGhost;
 import padl.kernel.IMemberInterface;
 import padl.kernel.IMethod;
@@ -86,6 +89,9 @@ public class Factory implements IFactory, Serializable {
 	}
 	public IClass createClass(final char[] anID, final char[] aName,String localPath) {
 		return new Class(anID, aName,localPath);
+	}
+	public IEnum createEnum(final char[] anID, final char[] aName,String localPath) {
+		return new Enum(anID, aName,localPath);
 	}
 	public ICodeLevelModel createCodeLevelModel(final char[] aName) {
 		final ICodeLevelModel codeLevelModel = new CodeLevelModel(aName);
@@ -315,5 +321,10 @@ public class Factory implements IFactory, Serializable {
 		final int aCardinality) {
 
 		return new UseRelationship(anID, aTargetEntity, aCardinality);
+	}
+	
+	@Override
+	public IMemberEnum createMemberEnum(char[] anID, char[] aName, String localPath) {
+		return new MemberEnum(anID, aName,localPath);
 	}
 }

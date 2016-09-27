@@ -1,15 +1,7 @@
 package miner.model.domain;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import miner.util.Log;
-import miner.util.exception.ObjectNotFoundException;
-import miner.util.exception.ValidationException;
 
 public class Branch {
 
@@ -34,53 +26,26 @@ public class Branch {
     }
     
     public String getLocalPathDownloads() {
-        return this.project.getLocalPathDownload()+ "/" + name;
+        return (this.project.getLocalPathDownload()+ "/" + name).replaceAll("\\\\","/").replaceAll("//","/");
     }
     
+    public String getGitDir() {
+        return (this.getLocalPathDownloads()+"/.git").replaceAll("//","/");
+    }
+
+    
     public String getLocalPathClasses() {
-        return this.project.getLocalPathClasses()+ "/" + name;
+        return (this.project.getLocalPathClasses()+ "/" + name).replaceAll("\\\\","/").replaceAll("//","/");
     }
 
     public String getLocalPathCommits() {
-        return this.project.getLocalPathCommits()+ "/" + name;
+        return (this.project.getLocalPathCommits()+ "/" + name).replaceAll("\\\\","/").replaceAll("//","/");
     }
     
 
     public boolean isAlreadyDownloaded() {
         File file = new File(getLocalPathDownloads());
         return file.isDirectory() && file.exists();
-    }
-
-    public void downloadBranch() throws IOException,ObjectNotFoundException,ValidationException {
-        String command = "git clone -b " + name + " " + project.getUrl() + " " + getLocalPathDownloads();
-        Log.writeLog("Exec git command to download branch local "+command);
-        Process powerShellProcess = Runtime.getRuntime().exec(command);
-        powerShellProcess.getOutputStream().close();
-        String line;
-        BufferedReader stdout = new BufferedReader(new InputStreamReader(
-                powerShellProcess.getInputStream()));
-        while ((line = stdout.readLine()) != null) {
-            Log.writeLog("Return "+line);
-        }
-    }
-
-    public static List<Branch> getBranchesProject(Project project) throws ObjectNotFoundException,
-            ValidationException,IOException {
-        String command = "git ls-remote --heads " + project.getUrl();
-        Log.writeLog("Exec git command to get all branch names "+command);
-        List<Branch> branches = new ArrayList<>();
-        Process powerShellProcess = Runtime.getRuntime().exec(command);
-        powerShellProcess.getOutputStream().close();
-        String line;
-        BufferedReader stdout = new BufferedReader(new InputStreamReader(
-                powerShellProcess.getInputStream()));
-        while ((line = stdout.readLine()) != null) {
-            String result[] = line.split("	");
-            Log.writeLog("Return "+Arrays.toString(result));
-            String branch = result[1].replace("refs/heads/", "");
-            branches.add(new Branch(branch, project));
-        }
-        return branches;
     }
     
     public Boolean isBranchMaster() {

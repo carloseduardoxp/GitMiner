@@ -9,16 +9,18 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.jdesktop.observablecollections.ObservableCollections;
 
 import miner.model.dao.ProjectDao;
 import miner.model.dao.structure.DaoFactory;
 import miner.model.domain.Project;
 import miner.model.service.ImportClassesService;
-import miner.util.exception.ValidationException;
 import miner.model.service.Observer;
 import miner.util.exception.ConnectionException;
-import org.jdesktop.observablecollections.ObservableCollections;
+import miner.util.exception.ValidationException;
 
 /**
  *
@@ -32,7 +34,10 @@ public class ImportClassesControl {
     
     private Project selectedProject;
     
+    private String filters;
+    
     public ImportClassesControl() {
+    	setFilters("/test/;/examples/;/example/");
         ProjectDao projectDao = DaoFactory.getProjectDao();
         projects = ObservableCollections.observableList(new ArrayList<Project>());
         projects.clear();  
@@ -49,7 +54,8 @@ public class ImportClassesControl {
         if (selectedProject == null) {
             throw new ValidationException("Select a Project");
         }
-        ImportClassesService service = new ImportClassesService(observer, selectedProject);
+        String[] filtersArray = filters.split(";");
+        ImportClassesService service = new ImportClassesService(observer, selectedProject,Arrays.asList(filtersArray));
         service.execute();
     }
 
@@ -67,9 +73,17 @@ public class ImportClassesControl {
 
     public void setSelectedProject(Project selectedProject) {
         this.selectedProject = selectedProject;
-    }    
+    }            
     
-    public void addPropertyChangeListener(PropertyChangeListener e) {
+    public String getFilters() {
+		return filters;
+	}
+
+	public void setFilters(String filters) {
+		this.filters = filters;
+	}
+
+	public void addPropertyChangeListener(PropertyChangeListener e) {
         propertyChangeSupport.addPropertyChangeListener(e);
     }
     public void removePropertyChangeListener(PropertyChangeListener e) {

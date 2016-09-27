@@ -8,6 +8,8 @@ public class Class {
     private Integer id;
 
     private String name;
+    
+    private boolean analyse;
 
     private Branch branch;
 
@@ -19,14 +21,16 @@ public class Class {
 
     }
     
-    public Class(Integer id,String name) {
+    public Class(Integer id,String name,Boolean analyse) {
     	this.id = id;
     	this.name = name;
+    	this.analyse = analyse;
     }
 
-    public Class(String name, Branch branch) {
+    public Class(String name, Branch branch,Boolean analyse) {
         this.name = name;
         this.branch = branch;
+        this.analyse = analyse;
     }        
 
     public Integer getId() {
@@ -69,6 +73,14 @@ public class Class {
     public void setBranch(Branch branch) {
         this.branch = branch;
     }
+
+	public boolean isAnalyse() {
+		return analyse;
+	}
+
+	public void setAnalyse(boolean analyse) {
+		this.analyse = analyse;
+	}
 
 	@Override
 	public int hashCode() {

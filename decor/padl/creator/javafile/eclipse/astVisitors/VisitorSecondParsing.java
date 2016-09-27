@@ -347,7 +347,85 @@ public class VisitorSecondParsing extends ExtendedASTVisitor {
 
 	@Override
 	public boolean visit(final EnumDeclaration node) {
-		return false;
+		// To avoid to visit classes or interfaces which are defined in
+				// methods!!!
+				if (node.getParent().getNodeType() != ASTNode.TYPE_DECLARATION
+						&& node.getParent().getNodeType() != ASTNode.COMPILATION_UNIT
+						// Fix for eclipse_12-15-2009 (fixed) ok see in
+						// VisitorFirstParsing
+						|| node.resolveBinding() == null) {
+
+					return false;
+				}
+
+				this.entityNb++;
+//				if (this.entityNb % 1000 == 0) {
+//					ProxyConsole
+//						.getInstance()
+//						.normalOutput()
+//						.println(
+//							"visited " + this.entityNb + " entities, current entity: "
+//									+ node.resolveBinding().getQualifiedName());
+		//
+//				}
+				String qualifiedName = node.resolveBinding().getQualifiedName();
+				final String simpleName = node.getName().toString();
+
+				if (this.myCurrentEntity == null) {
+					// means that it is a top level entity
+
+					if (this.listOfVisitedEntities.contains(qualifiedName)) {
+						// another class with the same id has already been visited
+						return false;
+					}
+					this.listOfVisitedEntities.add(qualifiedName);
+					if (this.myCurrentPackage == null) {
+						this.myCurrentPackage =
+							(IPackage) this.padlModel
+								.getConstituentFromID(Constants.DEFAULT_PACKAGE_ID);
+					}
+
+					this.myCurrentEntity =
+						(IFirstClassEntity) this.myCurrentPackage
+							.getConstituentFromID(qualifiedName.toCharArray());
+
+					//			if (this.myCurrentEntity == null) {
+					//				// this should not happen (check after all tests and delete it
+					//				
+					//				return false;
+					//			}
+
+					this.listOfVisitedMemberEntities.clear();
+				}
+				else {
+					// class member
+					// id of a class member - replace the . by $
+					qualifiedName =
+						this.myCurrentEntity.getDisplayID() + "$" + simpleName;
+
+					if (this.listOfVisitedMemberEntities.contains(qualifiedName)) {
+						// another memberClass with the same id has already been visited
+						return false;
+					}
+
+					this.listOfVisitedMemberEntities.add(qualifiedName);
+
+					final IFirstClassEntity memberEntity =
+						(IFirstClassEntity) this.myCurrentEntity
+							.getConstituentFromID(qualifiedName.toCharArray());
+
+					//			if (memberEntity == null) {// this should not be happened
+					//				
+					//				return false;
+					//			}
+
+					this.entitiesStack.addElement(this.myCurrentEntity);
+					this.myCurrentEntity = memberEntity;
+
+				}
+
+
+				return super.visit(node);
 	}
 
 	// Methods for limiting the visit

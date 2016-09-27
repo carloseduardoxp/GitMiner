@@ -142,7 +142,88 @@ public class VisitorFirstParsing extends ExtendedASTVisitor {
 
 	@Override
 	public boolean visit(final EnumDeclaration node) {
-		return false;
+		// To avoid to visit classes or interfaces which are defined in
+				// methods!!!
+				if (node.getParent().getNodeType() != ASTNode.TYPE_DECLARATION
+						&& node.getParent().getNodeType() != ASTNode.COMPILATION_UNIT
+						// Fix for eclipse_12-15-2009 (case where the code is not
+						// correct (two classes in the same package with the same name
+						// or two member entities
+						// of the same entity with the same name)
+						|| node.resolveBinding() == null) {
+
+					return false;
+				}
+				// any visited class
+				this.entityNb++;
+
+//				if (this.entityNb % 1000 == 0) {
+//					ProxyConsole
+//						.getInstance()
+//						.normalOutput()
+//						.println(
+//							"visited " + this.entityNb + " entities, current entity: "
+//									+ node.resolveBinding().getQualifiedName());
+		//
+//				}
+				char[] entityBindingName =
+					node.resolveBinding().getQualifiedName().toCharArray();
+
+				final String simpleName = node.getName().toString();
+
+				// a class with this id is already in the model so we don't parse it
+				if (this.padlModel.getTopLevelEntityFromID(entityBindingName) != null) {
+
+					return false;
+				}
+				if (this.myCurrentEntity == null) {
+					// visited class is a top level class
+					if (this.myCurrentPackage == null) {
+						// This means that it is a default package
+						if ((this.myCurrentPackage =
+							(IPackageDefault) this.padlModel
+								.getConstituentFromID(Constants.DEFAULT_PACKAGE_ID)) == null) {
+							this.myCurrentPackage =
+								this.padlModel.getFactory().createPackageDefault();
+							this.padlModel.addConstituent(this.myCurrentPackage);
+						}
+					}
+						this.myCurrentEntity =
+							this.padlModel.getFactory().createEnum(
+								entityBindingName,
+								simpleName.toCharArray(),getLocalPath());
+
+					this.myCurrentPackage.addConstituent(this.myCurrentEntity);
+				}
+				else {
+					// class member
+					// id of a class member - replace the . by $
+					entityBindingName =
+						(this.myCurrentEntity.getDisplayID() + "$" + simpleName)
+							.toCharArray();
+					// if a class member with this id is already in the current
+					// class we don't parse it
+					if (this.myCurrentEntity
+						.doesContainConstituentWithID(entityBindingName)) {
+
+						return false;
+					}
+
+					IFirstClassEntity memberEntity;					
+						memberEntity =
+							this.padlModel.getFactory().createMemberEnum(
+								entityBindingName,
+								simpleName.toCharArray(),getLocalPath());
+					
+					this.myCurrentEntity
+						.addConstituent((IConstituentOfEntity) memberEntity);
+					this.entitiesStack.addElement(this.myCurrentEntity);
+					this.myCurrentEntity = memberEntity;
+
+				}
+				this.myCurrentEntity.setVisibility(node.getModifiers());
+
+				return super.visit(node);
 	}
 
 	/**
@@ -222,7 +303,7 @@ public class VisitorFirstParsing extends ExtendedASTVisitor {
 					this.padlModel.getFactory().createInterface(
 						entityBindingName,
 						simpleName.toCharArray(),getLocalPath());
-			}
+			}			
 			else {
 				this.myCurrentEntity =
 					this.padlModel.getFactory().createClass(

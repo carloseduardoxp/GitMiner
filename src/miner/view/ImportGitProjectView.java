@@ -61,7 +61,6 @@ public class ImportGitProjectView extends javax.swing.JInternalFrame implements 
         pnlNew = new javax.swing.JPanel();
         lblUrl = new javax.swing.JLabel();
         btnImport = new javax.swing.JButton();
-        lblMessage = new javax.swing.JLabel();
         lblName = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
         lblLocalPath = new javax.swing.JLabel();
@@ -89,8 +88,6 @@ public class ImportGitProjectView extends javax.swing.JInternalFrame implements 
                 btnImportActionPerformed(evt);
             }
         });
-
-        lblMessage.setText("To work, you must run in Linux and have installed git. In Ubuntu, try:  sudo apt-get install git");
 
         lblName.setText("Name:");
 
@@ -150,9 +147,8 @@ public class ImportGitProjectView extends javax.swing.JInternalFrame implements 
                     .addComponent(chkDropBranch)
                     .addComponent(chkImportOnlyMasterBranch)
                     .addComponent(btnImport)
-                    .addComponent(lblMessage)
                     .addComponent(prbImport, javax.swing.GroupLayout.PREFERRED_SIZE, 636, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
         pnlNewLayout.setVerticalGroup(
             pnlNewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -175,9 +171,7 @@ public class ImportGitProjectView extends javax.swing.JInternalFrame implements 
                 .addComponent(chkImportOnlyMasterBranch)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnImport)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblMessage)
-                .addGap(15, 15, 15)
+                .addGap(38, 38, 38)
                 .addComponent(lblMsg)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(prbImport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -299,7 +293,6 @@ public class ImportGitProjectView extends javax.swing.JInternalFrame implements 
     private javax.swing.JCheckBox chkDropBranch;
     private javax.swing.JCheckBox chkImportOnlyMasterBranch;
     private javax.swing.JLabel lblLocalPath;
-    private javax.swing.JLabel lblMessage;
     private javax.swing.JLabel lblMsg;
     private javax.swing.JLabel lblName;
     private javax.swing.JLabel lblUrl;

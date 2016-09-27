@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
 import miner.model.dao.structure.CrudDao;
 import miner.model.dao.structure.DaoFactory;
@@ -23,7 +24,6 @@ import miner.model.dao.structure.ICrudDao;
 import miner.model.dao.structure.xml.TypeQuery;
 import miner.model.domain.Commit;
 import miner.model.domain.CommitChange;
-import miner.model.domain.FileModificationTypeEnum;
 import miner.util.exception.ConnectionException;
 import miner.util.exception.ValidationException;
 
@@ -33,7 +33,8 @@ import miner.util.exception.ValidationException;
  */
 public class CommitChangeDao {
     
-    public void save(List<CommitChange> commitsChange,Connection jdbc) throws IOException,ConnectionException {
+    public void save(List<CommitChange> commitsChange,Connection jdbc) throws IOException,ConnectionException,
+                    ValidationException{
         ICrudDao dao = new CrudDao(jdbc);
         dao.updateBatch(TypeQuery.INSERT,"saveNewCommitChange",convertListToParameters(commitsChange));       
         saveLocal(commitsChange);
@@ -49,13 +50,14 @@ public class CommitChangeDao {
     
     private Map<Integer, Object> convertToParameters(CommitChange commitChange) {
         Map<Integer,Object> parameters = new HashMap<>();
-        parameters.put(1,commitChange.getModificationType().toString());
-        parameters.put(2,commitChange.getFileName());
-        parameters.put(3,commitChange.getCommit().getHash());
+        parameters.put(1,commitChange.getChangeType().toString());
+        parameters.put(2,commitChange.getOldFileName());
+        parameters.put(3,commitChange.getNewFileName());
+        parameters.put(4,commitChange.getCommit().getHash());
         return parameters;        
     }       
     
-    private void saveLocal(List<CommitChange> commitsChange) throws IOException {
+    private void saveLocal(List<CommitChange> commitsChange) throws IOException,ValidationException {
         if (commitsChange.isEmpty()) {
             return;
         }        
@@ -64,6 +66,13 @@ public class CommitChangeDao {
             dir.mkdir();        
         }
         for (CommitChange commitChange: commitsChange) {
+        	if (commitChange.getSourceCode() == null) {
+        		if (commitChange.getChangeType() == ChangeType.DELETE) {
+        			continue;
+        		} else {
+        			throw new ValidationException("CommitChange dont have source "+commitChange);
+        		}
+        	}
             FileUtils.writeByteArrayToFile(new File(commitChange.getLocalPath()),commitChange.getSourceCode());
         }
     }
@@ -81,8 +90,9 @@ public class CommitChangeDao {
         while (rs.next()) {
             CommitChange change = new CommitChange();
             change.setId(rs.getInt(1));
-            change.setModificationType(FileModificationTypeEnum.getTypeName(rs.getString(2)));
-            change.setFileName(rs.getString(3));
+            change.setChangeType(ChangeType.valueOf(rs.getString(2)));
+            change.setOldFileName(rs.getString(3));
+            change.setNewFileName(rs.getString(4));
             change.setCommit(commit);
             changes.add(change);
         }

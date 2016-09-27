@@ -26,7 +26,9 @@ import padl.creator.javafile.eclipse.CompleteJavaFileCreator;
 import padl.kernel.IClass;
 import padl.kernel.ICodeLevelModel;
 import padl.kernel.IEntity;
+import padl.kernel.IEnum;
 import padl.kernel.IIdiomLevelModel;
+import padl.kernel.IInterface;
 import padl.kernel.impl.Factory;
 
 public class ImportClassesService {
@@ -37,12 +39,14 @@ public class ImportClassesService {
 	private Project project;
 	private Map<miner.model.domain.Class,List<CommitChange>> classCommitChanges;
 	private Connection connection;
+	private List<String> filters;
 
-	public ImportClassesService(Observer observer, Project project) {
+	public ImportClassesService(Observer observer, Project project,List<String> filters) {
 		classDao = DaoFactory.getClassDao();
 		projectDao = DaoFactory.getProjectDao();
 		this.observer = observer;
 		this.project = project;
+		this.filters = filters;
 	}
 
 	public void execute() throws Exception {
@@ -108,7 +112,7 @@ public class ImportClassesService {
 		for (CommitChange commitChange : commit.getChanges()) {
 			String classPath = commitChange.getLocalPath();
 			String path = commitChange.getCommit().getLocalPathCommits();
-			String fileName = commitChange.getFileName();
+			String fileName = commitChange.getNewFileName();
 			if (fileName.endsWith(".jar")) {
 				Log.writeLog("Cant analyse jars " + fileName + " - " +classPath);
 				continue;
@@ -119,7 +123,8 @@ public class ImportClassesService {
 					Log.writeLog("Cant find java classes in path " + path);
 				}
 				for (String className: classNames) {
-					miner.model.domain.Class javaClass = new miner.model.domain.Class(className,commit.getBranch());					
+					miner.model.domain.Class javaClass = 
+							new miner.model.domain.Class(className,commit.getBranch(),analyseClass(fileName));					
 					if (classCommitChanges.containsKey(javaClass)) {
 						List<CommitChange> changes = classCommitChanges.get(javaClass);
 						changes.add(commitChange);
@@ -134,6 +139,15 @@ public class ImportClassesService {
 				throw new ValidationException("Cant found class name in change " + commitChange.toString());
 			}
 		}
+	}
+
+	private Boolean analyseClass(String className) {
+		for (String filter: filters) {
+			if (className.contains(filter)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public List<String> analyseCodeLevelModelFromJavaSourceFiles(String path, String classPath,String name) throws Exception {		
@@ -162,8 +176,15 @@ public class ImportClassesService {
 			if (entity instanceof IClass) {
 				IClass aClass = (IClass) entity;
 				//aClass.getLocalPath();
-				classNames.add(aClass.getDisplayID());				
-			}
+				classNames.add(aClass.getDisplayID());	
+			} else if (entity instanceof IEnum) {
+				IEnum aEnum = (IEnum) entity;
+				classNames.add(aEnum.getDisplayID());						
+			} else if (entity instanceof IInterface) {
+				IInterface aInterface = (IInterface) entity;
+				classNames.add(aInterface.getDisplayID());
+			} 
+			
 		}
 		return classNames;
 	}

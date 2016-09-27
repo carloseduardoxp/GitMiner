@@ -24,6 +24,7 @@ public interface IFactory {
 		final IFirstClassEntity aTargetEntity,
 		final int aCardinality);
 	IClass createClass(final char[] anID, final char[] aName,String localPath);
+	IEnum createEnum(final char[] anID, final char[] aName,String localPath);
 	ICodeLevelModel createCodeLevelModel(final char[] aName);
 	ICodeLevelModel createCodeLevelModel(final String aName);
 	IComposition createCompositionRelationship(
@@ -65,6 +66,7 @@ public interface IFactory {
 	IIdiomLevelModel createIdiomLevelModel(final char[] aName);
 	IInterface createInterface(final char[] anID, final char[] aName,String localPath);
 	IMemberClass createMemberClass(final char[] anID, final char[] aName,String localPath);
+	IMemberEnum createMemberEnum(final char[] anID, final char[] aName,String localPath);
 	IMemberGhost createMemberGhost(final char[] anID, final char[] aName);
 	IMemberInterface createMemberInterface(final char[] anID, final char[] aName,String localPath);
 	IMethod createMethod(final char[] anID, final char[] aName);

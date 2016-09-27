@@ -34,12 +34,17 @@ public class CommitDao {
     
     private Map<Integer, Object> convertToParameters(Commit commit) {
         Map<Integer,Object> parameters = new HashMap<>();
+        		
         parameters.put(1,commit.getHash());
-        parameters.put(2,commit.getDate());
-        parameters.put(3,commit.getAuthor());
-        parameters.put(4,commit.getEmailAuthor());
-        parameters.put(5,commit.getSubject());
-        parameters.put(6,commit.getBranch().getId());
+        parameters.put(2,commit.getAuthorName());
+        parameters.put(3,commit.getAuthorEmail());
+        parameters.put(4,commit.getAuthorDate());
+        parameters.put(5,commit.getCommitterName());
+        parameters.put(6,commit.getCommitterEmail());
+        parameters.put(7,commit.getCommitterDate());
+        parameters.put(8,commit.getFullMessage());
+        parameters.put(9,commit.getShortMessage());
+        parameters.put(10,commit.getBranch().getId());
         return parameters;        
     }    
     
@@ -56,10 +61,14 @@ public class CommitDao {
         while (rs.next()) {
             Commit commit = new Commit();
             commit.setHash(rs.getString(1));
-            commit.setDate(rs.getDate(2));
-            commit.setAuthor(rs.getString(3));
-            commit.setEmailAuthor(rs.getString(4));
-            commit.setSubject(rs.getString(5));
+            commit.setAuthorName(rs.getString(2));
+            commit.setAuthorEmail(rs.getString(3));
+            commit.setAuthorDate(rs.getDate(4));
+            commit.setCommitterName(rs.getString(5));
+            commit.setCommitterEmail(rs.getString(6));
+            commit.setCommitterDate(rs.getDate(7));
+            commit.setFullMessage(rs.getString(8));
+            commit.setShortMessage(rs.getString(9));
             commit.setBranch(branch);
             commits.add(commit);
         }

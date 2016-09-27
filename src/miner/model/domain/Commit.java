@@ -1,26 +1,27 @@
 package miner.model.domain;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import miner.util.Log;
-
-import miner.util.exception.ValidationException;
 
 public class Commit {
 
     private String hash;
+    
+    private String authorName;
 
-    private Date date;
+    private String authorEmail;
 
-    private String author;
+    private Date authorDate;
 
-    private String emailAuthor;
+    private String committerName;
+    
+    private String committerEmail;
+    
+    private Date committerDate;
 
-    private String subject;
+    private String fullMessage;
+    
+    private String shortMessage;
 
     private Branch branch;
 
@@ -30,58 +31,27 @@ public class Commit {
 
     }
 
-    public Commit(String hash, Date date, String author, String emailAuthor, Branch branch, String subject) {
-        super();
-        this.hash = hash;
-        this.date = date;
-        this.author = author;
-        this.emailAuthor = emailAuthor;
-        this.branch = branch;
-        this.subject = subject;
-    }
+    public Commit(String hash, String authorName, String authorEmail, Date authorDate, String committerName,
+			String committerEmail, Date committerDate, String fullMessage, String shortMessage, Branch branch) {
+		super();
+		this.hash = hash;
+		this.authorName = authorName;
+		this.authorEmail = authorEmail;
+		this.authorDate = authorDate;
+		this.committerName = committerName;
+		this.committerEmail = committerEmail;
+		this.committerDate = committerDate;
+		this.fullMessage = fullMessage;
+		this.shortMessage = shortMessage;
+		this.branch = branch;
+	}
 
-    public String getLocalPathCommits() {
+	public String getLocalPathCommits() {
         return this.branch.getLocalPathCommits() + "/" + hash;
-    }
-
-    public static List<Commit> getCommits(Branch branch) throws Exception {
-        String command[] = {"/bin/sh", "-c",
-            "git --git-dir=" + branch.getLocalPathDownloads() + "/.git --work-tree="
-            + branch.getLocalPathDownloads()
-            + " log --reverse --pretty=format:%H###%h###%cn###%ce###%ct###%s " + branch.getName()};
-        Log.writeLog("Exec git command to get all commits " + Arrays.toString(command));
-        Process powerShellProcess = Runtime.getRuntime().exec(command);
-        powerShellProcess.getOutputStream().close();
-        List<Commit> commits = new ArrayList<>();
-        String line;
-        BufferedReader stdout = new BufferedReader(new InputStreamReader(powerShellProcess.getInputStream()));
-        while ((line = stdout.readLine()) != null) {
-            Log.writeLog("Return " + line);
-            String[] values = line.split("###");
-            String hash = values[0];
-            String author = values[2];
-            String email = values[3];
-            Date date = new Date(Long.parseLong(values[4]) * 1000);
-            String subject = values.length > 5 ? values[5] : "";
-            commits.add(new Commit(hash, date, author, email, branch, subject));
-        }
-        if (commits.isEmpty()) {
-            Log.writeLog("Cant found commits in branch " + branch.getName());
-            throw new ValidationException("Cant found commits in branch " + branch.getName());
-        }
-        return commits;
     }
 
     public String getLocalPath() {
         return getBranch().getLocalPathCommits() + "/" + getHash();
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
     }
 
     public String getHash() {
@@ -100,30 +70,6 @@ public class Commit {
         this.branch = branch;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getEmailAuthor() {
-        return emailAuthor;
-    }
-
-    public void setEmailAuthor(String emailAuthor) {
-        this.emailAuthor = emailAuthor;
-    }
-
     public List<CommitChange> getChanges() {
         return changes;
     }
@@ -131,5 +77,79 @@ public class Commit {
     public void setChanges(List<CommitChange> changes) {
         this.changes = changes;
     }
+
+	public String getAuthorName() {
+		return authorName;
+	}
+
+	public void setAuthorName(String authorName) {
+		this.authorName = authorName;
+	}
+
+	public String getAuthorEmail() {
+		return authorEmail;
+	}
+
+	public void setAuthorEmail(String authorEmail) {
+		this.authorEmail = authorEmail;
+	}
+
+	public Date getAuthorDate() {
+		return authorDate;
+	}
+
+	public void setAuthorDate(Date authorDate) {
+		this.authorDate = authorDate;
+	}
+
+	public String getCommitterName() {
+		return committerName;
+	}
+
+	public void setCommitterName(String committerName) {
+		this.committerName = committerName;
+	}
+
+	public String getCommitterEmail() {
+		return committerEmail;
+	}
+
+	public void setCommitterEmail(String committerEmail) {
+		this.committerEmail = committerEmail;
+	}
+
+	public Date getCommitterDate() {
+		return committerDate;
+	}
+
+	public void setCommitterDate(Date committerDate) {
+		this.committerDate = committerDate;
+	}
+
+	public String getFullMessage() {
+		return fullMessage;
+	}
+
+	public void setFullMessage(String fullMessage) {
+		this.fullMessage = fullMessage;
+	}
+
+	public String getShortMessage() {
+		return shortMessage;
+	}
+
+	public void setShortMessage(String shortMessage) {
+		this.shortMessage = shortMessage;
+	}
+
+	@Override
+	public String toString() {
+		return "Commit [hash=" + hash + ", authorName=" + authorName + ", authorEmail=" + authorEmail + ", authorDate="
+				+ authorDate + ", committerName=" + committerName + ", committerEmail=" + committerEmail
+				+ ", committerDate=" + committerDate + ", fullMessage=" + fullMessage + ", shortMessage=" + shortMessage
+				+ ", branch=" + branch + "]";
+	}      
+	
+	
 
 }
