@@ -2,6 +2,7 @@ package miner.model.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import miner.model.dao.DetectedSmellDao;
@@ -35,6 +36,7 @@ public class ImportCodeSmellsService {
     private final Observer observer;
     private Project project;
     private final List<SmellEnum> smells;
+    private CurrentClasses currentClasses;
 
     public ImportCodeSmellsService(Observer observer, Project project, List<SmellEnum> smells) {
         detectedSmellDao = DaoFactory.getDetectedSmellDao();
@@ -42,6 +44,7 @@ public class ImportCodeSmellsService {
         this.observer = observer;
         this.project = project;
         this.smells = smells;
+        this.currentClasses = new CurrentClasses();
     }
 
     public void execute() throws Exception {
@@ -90,16 +93,27 @@ public class ImportCodeSmellsService {
 			Log.writeLog("Commit " + commit.getHash()+" dont have changes");
 			return;
 		}
-		IIdiomLevelModel iIdiomLevelModel = analyseCodeLevelModelFromJavaSourceFiles(commit.getLocalPath(),commit.getLocalPath(),commit.getHash());
+		boolean isChangeAnyone = currentClasses.addCommit(commit);
+		if (currentClasses.getPaths().length == 0 || !isChangeAnyone) {
+			Log.writeLog("Commit "+ commit.getHash()+" dont have changes in analysed classes");
+			return;
+		}
+		IIdiomLevelModel iIdiomLevelModel = analyseCodeLevelModelFromJavaSourceFiles(commit.getBranch().getLocalPathCommits(),commit.getHash());
 		List<DetectedSmell> smells = analyseCodeLevelModel(iIdiomLevelModel,commit);
 		if (!smells.isEmpty()) {
+			Log.writeLog("Find smells: "+smells);
 			detectedSmellDao.insertDetectedSmells(smells);	
-		}				
+		} else {
+			Log.writeLog("Cant Find smells");
+		}
 	}
 
-	public IIdiomLevelModel analyseCodeLevelModelFromJavaSourceFiles(String path, String classPath,String name) throws Exception {		
+	public IIdiomLevelModel analyseCodeLevelModelFromJavaSourceFiles(String path, String name) throws Exception {		
+		Log.writeLog("Count current classes analysed: "+currentClasses.getPaths().length);
+		Log.writeLog("Current classes analysed: "+Arrays.asList(currentClasses.getPaths()));
+		
 		final CompleteJavaFileCreator creator = new CompleteJavaFileCreator(new String[] { path }, new String[] { "" },
-				new String[] { classPath });
+				currentClasses.getPaths());
 		final ICodeLevelModel codeLevelModel = Factory.getInstance().createCodeLevelModel(name);
 		codeLevelModel.create(creator);
 		final padl.creator.javafile.eclipse.astVisitors.LOCModelAnnotator annotator2 = new padl.creator.javafile.eclipse.astVisitors.LOCModelAnnotator(
@@ -148,7 +162,11 @@ public class ImportCodeSmellsService {
 
     private DetectedSmell processa(ICodeSmell cs, String name, Commit commit) throws Exception {
         if (cs instanceof CodeSmell) {
-            return new DetectedSmell(SmellEnum.getSmellName(name),getClassCommitChange(commit.getChanges(), cs.getIClass()),cs.toString() );
+        	ClassCommitChange classCommitChange = getClassCommitChange(commit.getChanges(),cs.getIClass());
+			if (classCommitChange == null) {
+				return null;
+			}
+            return new DetectedSmell(SmellEnum.getSmellName(name),classCommitChange,cs.toString() );
         } else if (cs instanceof CodeSmellComposite) {
             CodeSmellComposite co = (CodeSmellComposite) cs;
             for (Object o : co.getSetOfCodeSmellsOfGeneric()) {
@@ -167,7 +185,8 @@ public class ImportCodeSmellsService {
 				}
  			}
 		}
-		throw new ValidationException("Cant found class "+aClass.getDisplayID());
+		//throw new ValidationException("Cant found class "+aClass.getDisplayID());
+		return null;
 	}
 
 

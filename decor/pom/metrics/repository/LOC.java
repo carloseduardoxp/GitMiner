@@ -28,15 +28,14 @@ public class LOC extends AbstractMetric implements IMetric, IUnaryMetric {
 		int loc = 0;
 
 		if (anEntity instanceof IClass) {
-			final IClass clazz = (IClass) anEntity;
-
+			final IClass clazz = (IClass) anEntity;			
 			final Iterator iteratorOnMethods =
 				clazz.getIteratorOnConstituents(IMethod.class);
 			while (iteratorOnMethods.hasNext()) {
 				final IMethod method = (IMethod) iteratorOnMethods.next();
+				
 				if (!method.isAbstract()
 						&& (method.getVisibility() & Modifier.NATIVE) == 0) {
-
 					final String[] codeLines = method.getCodeLines();
 					if (codeLines.length != 0) {
 						loc += method.getCodeLines().length;

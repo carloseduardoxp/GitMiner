@@ -20,18 +20,24 @@ public class CurrentClasses {
 	public boolean addCommit(Commit commit) {
 		boolean isChangeAnyone = false;
 		for (CommitChange change: commit.getChanges()) {
-			if (change.getChangeType() == ChangeType.ADD) {
+			if (change.getChangeType() == ChangeType.ADD || change.getChangeType() == ChangeType.MODIFY) {
 				for (ClassCommitChange ccc: change.getClassCommitchange()) {
 					if (ccc.getJavaClass().isAnalyse()) {
+						removeClass(ccc.getJavaClass().getName());
 						changes.add(ccc);
-						isChangeAnyone = true;
+						if (!ccc.getJavaClass().isContentEnum() && !ccc.getJavaClass().isContentInterface()) {
+							isChangeAnyone = true;	
+						}						
 					}
  				}
 			} else if (change.getChangeType() == ChangeType.DELETE) {
-				for (ClassCommitChange ccc: change.getClassCommitchange()) {					
-					changes.remove(ccc);		
-					isChangeAnyone = true;
+				for (ClassCommitChange ccc: change.getClassCommitchange()) {	
+					boolean isRemoved = removeClass(ccc.getJavaClass().getName());		
+					if (isRemoved) {
+						isChangeAnyone = true;
+					}
  				}
+				//TODO other types RENAMED, ETC.. 
 			} else {
 				for (ClassCommitChange ccc: change.getClassCommitchange()) {
 					if (ccc.getJavaClass().isAnalyse()) {						
@@ -43,11 +49,20 @@ public class CurrentClasses {
 		return isChangeAnyone;
 	}
 	
+	private boolean removeClass(String name) {
+		for (ClassCommitChange ccc: changes) {
+			if (ccc.getJavaClass().getName().equals(name)) {
+				return changes.remove(ccc);
+			}
+		}
+		return false;
+	}
+
 	public String[] getPaths() {
 		List<String> paths = new ArrayList<String>();
 		for (ClassCommitChange commitChange: changes) {
 			paths.add(commitChange.getCommitChange().getLocalPath());
-		}
+		}		
 		return paths.stream().toArray(String[]::new);
 	}
 

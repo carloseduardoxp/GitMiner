@@ -2,7 +2,7 @@ package miner.model.service;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -80,14 +80,6 @@ public class ImportMetricsService {
 		notifyObservers(totalCommits, i);
 	}
 
-	private void notifyObservers(int totalCommits, int commitsPerformed) {
-		Double d = new Double(commitsPerformed) / new Double(totalCommits);
-		int progress = new Double(d * 100).intValue();
-		observer.sendCurrentPercent(progress);
-		observer.sendStatusMessage("Analysed " + commitsPerformed + " commits of " + totalCommits);
-		Log.writeLog("Analysed " + commitsPerformed + " commits of " + totalCommits);
-	}
-
 	private void analyseCommit(Commit commit) throws ValidationException, IOException, Exception {
 		Log.writeLog("Analysing commit " + commit.getHash());
 		if (commit.getChanges().isEmpty()) {
@@ -96,16 +88,17 @@ public class ImportMetricsService {
 		}
 		boolean isChangeAnyone = currentClasses.addCommit(commit);
 		if (currentClasses.getPaths().length == 0 || !isChangeAnyone) {
-			System.out.println("Commit "+ commit.getHash()+" dont have changes in analysed classes");
+			Log.writeLog("Commit "+ commit.getHash()+" dont have changes in analysed classes");
 			return;
 		}
-		System.out.println("Irá avaliar "+currentClasses.getPaths().length+" do commit "+commit.getHash());
 		IIdiomLevelModel iIdiomLevelModel = analyseCodeLevelModelFromJavaSourceFiles(commit.getBranch().getLocalPathCommits(),commit.getHash());
 		getMetrics(commit,iIdiomLevelModel);
 		classCommitChangeDao.updateMetrics(commit);		
 	}
 
-	public IIdiomLevelModel analyseCodeLevelModelFromJavaSourceFiles(String path,String name) throws Exception {		
+	public IIdiomLevelModel analyseCodeLevelModelFromJavaSourceFiles(String path,String name) throws Exception {
+		Log.writeLog("Count current classes analysed: "+currentClasses.getPaths().length);
+		Log.writeLog("Current classes analysed: "+Arrays.asList(currentClasses.getPaths()));
 		final CompleteJavaFileCreator creator = new CompleteJavaFileCreator(new String[] { path }, new String[] { "" },
 				currentClasses.getPaths());
 		final ICodeLevelModel codeLevelModel = Factory.getInstance().createCodeLevelModel(name);
@@ -123,13 +116,12 @@ public class ImportMetricsService {
 	}
 
 	private static void getMetrics(Commit commit,IIdiomLevelModel iIdiomLevelModel) throws ValidationException {
-		List<CommitChange> changes = new ArrayList<>(commit.getChanges());
 		final Iterator iter = iIdiomLevelModel.getIteratorOnTopLevelEntities();
 		while (iter.hasNext()) {
 			final IEntity entity = (IEntity) iter.next();
 			if (entity instanceof IClass) {
 				final IClass aClass = (IClass) entity;
-				ClassCommitChange classCommitChange = getClassCommitChange(changes,aClass);
+				ClassCommitChange classCommitChange = getClassCommitChange(commit.getChanges(),aClass);
 				if (classCommitChange == null) {
 					continue;
 				}
@@ -199,13 +191,20 @@ public class ImportMetricsService {
 		for (CommitChange change: changes) {
 			for (ClassCommitChange classChange: change.getClassCommitchange()) {				
 				if (classChange.getJavaClass().getName().equals(aClass.getDisplayID())) {
-					changes.remove(classChange);
 					return classChange;
 				}
  			}
 		}
 		return null;
 		//throw new ValidationException("Cant found class "+aClass.getDisplayID()+" in changes "+changes);
+	}
+	
+	private void notifyObservers(int totalCommits, int commitsPerformed) {
+		Double d = new Double(commitsPerformed) / new Double(totalCommits);
+		int progress = new Double(d * 100).intValue();
+		observer.sendCurrentPercent(progress);
+		observer.sendStatusMessage("Analysed " + commitsPerformed + " commits of " + totalCommits);
+		Log.writeLog("Analysed " + commitsPerformed + " commits of " + totalCommits);
 	}
 
 }

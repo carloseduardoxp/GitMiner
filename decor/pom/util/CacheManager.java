@@ -80,8 +80,9 @@ public class CacheManager {
 
 		final StringBuffer buffer = new StringBuffer();
 		buffer.append(aMetric.getClass().getName());
-		buffer.append(anEntity.getID());
-		buffer.append(anotherEntity.getID());
+		//TODO validar melhor
+		buffer.append(anEntity.getLocalPath());
+		buffer.append(anotherEntity.getLocalPath());
 		return buffer.toString();
 	}
 	private String getPrimitiveKey(
@@ -101,7 +102,9 @@ public class CacheManager {
 
 		final StringBuffer buffer = new StringBuffer();
 		buffer.append(aMetric.getClass().getName());
-		buffer.append(anEntity.getID());
+		//TODO validar melhor
+		//buffer.append(anEntity.getID());
+		buffer.append(anEntity.getLocalPath());
 		return buffer.toString();
 	}
 	//	public boolean isAsymetricalBinaryMetricValueInCache(
