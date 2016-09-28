@@ -13,7 +13,6 @@ import miner.model.dao.structure.ICrudDao;
 import miner.model.dao.structure.JdbcConnection;
 import miner.model.dao.structure.xml.TypeQuery;
 import miner.model.domain.ClassCommitChange;
-import miner.model.domain.CommitChange;
 import miner.model.domain.DetectedSmell;
 import miner.model.domain.SmellEnum;
 import miner.util.exception.ConnectionException;

@@ -49,7 +49,7 @@ public class Project {
 
     public String getLocalPathDownload() {
         try {
-            return DaoFactory.getConfigurationDao().getConfiguration().getPathDownloads()+"/" + getName();
+            return (DaoFactory.getConfigurationDao().getConfiguration().getPathDownloads()+"/" + getName()).replaceAll("\\\\","/").replaceAll("//","/");
         } catch (ObjectNotFoundException | ValidationException e) {
             throw new RuntimeException("Error on find local path " + e.getMessage());
         }     
@@ -57,7 +57,7 @@ public class Project {
     
     public String getLocalPathClasses() {
         try {
-            return DaoFactory.getConfigurationDao().getConfiguration().getPathClasses()+"/" + getName();
+            return (DaoFactory.getConfigurationDao().getConfiguration().getPathClasses()+"/" + getName()).replaceAll("\\\\","/").replaceAll("//","/");
         } catch (ObjectNotFoundException | ValidationException e) {
             throw new RuntimeException("Error on find local path " + e.getMessage());
         }     
@@ -65,7 +65,7 @@ public class Project {
     
     public String getLocalPathCommits() {
         try {
-            return DaoFactory.getConfigurationDao().getConfiguration().getPathCommits()+"/" + getName();
+            return (DaoFactory.getConfigurationDao().getConfiguration().getPathCommits()+"/" + getName()).replaceAll("\\\\","/").replaceAll("//","/");
         } catch (ObjectNotFoundException | ValidationException e) {
             throw new RuntimeException("Error on find local path " + e.getMessage());
         }     
@@ -73,7 +73,7 @@ public class Project {
     
     public String getLocalPathWeka() {
         try {
-            return DaoFactory.getConfigurationDao().getConfiguration().getPathWeka()+"/" + getName();
+            return (DaoFactory.getConfigurationDao().getConfiguration().getPathWeka()+"/" + getName()).replaceAll("\\\\","/").replaceAll("//","/");
         } catch (ObjectNotFoundException | ValidationException e) {
             throw new RuntimeException("Error on find local path " + e.getMessage());
         }     

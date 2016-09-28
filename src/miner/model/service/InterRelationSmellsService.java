@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +18,6 @@ import miner.model.dao.structure.DaoFactory;
 import miner.model.domain.Branch;
 import miner.model.domain.Class;
 import miner.model.domain.ClassCommitChange;
-import miner.model.domain.CommitChange;
 import miner.model.domain.DetectedSmell;
 import miner.model.domain.Project;
 import miner.model.domain.SmellEnum;
@@ -35,20 +35,37 @@ public class InterRelationSmellsService {
 
     private ProjectDao projectDao;
 
-    private PrintWriter pw;
+    private PrintWriter pwCsv;
+    private PrintWriter pwCsvClass;
+    private PrintWriter pwCommands;
 
     public InterRelationSmellsService(Observer observer, Project project) throws FileNotFoundException {
         projectDao = DaoFactory.getProjectDao();
         this.observer = observer;
         this.project = project;
-        pw = new PrintWriter(new File(project.getLocalPathWeka()+ "InterRelationSmells.arff"));
-        pw.write("@RELATION " + project.getName() + "\n\n");
-        pw.write(SmellEnum.getNomeSmells() + "\n\n");
-        pw.write("@DATA\n");
-
+        String fileName = project.getLocalPathWeka()+".csv";
+        pwCsv = new PrintWriter(new File(fileName));
+        pwCsvClass = new PrintWriter(new File(project.getLocalPathWeka()+"---Class.csv"));
+        pwCommands = new PrintWriter(new File(project.getLocalPathWeka()+"Commands.csv"));
+        //pwCsv.write("Smells	ClassId-ClassName\n");
+        writeCommands(fileName);
     }
 
-    public void execute() throws Exception {
+    private void writeCommands(String fileName) {    	
+        pwCommands.write("Download R in http://cran.r-project.org \n");
+        pwCommands.write("install.packages(\"arules\")\n");
+        pwCommands.write("library(\"arules\")\n");
+        pwCommands.write("database <- read.transactions(\""+fileName+"\",sep=\";\")\n");
+        pwCommands.write("rules <- apriori(data = database, parameter = list(minlen = 2,supp=0.02,conf = 0.8))\n");
+        pwCommands.write("sort_rules <- sort(rules,by=\"confidence\")\n");
+        pwCommands.write("inspect(sort_rules)\n");
+        pwCommands.write("install.packages(\"arulesViz\")\n");
+        pwCommands.write("library(\"arulesViz\")\n");
+        pwCommands.write("plot(rules,method=\"scatter\",measure=c(\"support\",\"confidence\"),shading=\"lift\")\n");
+        pwCommands.write("plot(rules,method=\"grouped\",measure=c(\"support\"),shading=\"confidence\")");		
+	}
+
+	public void execute() throws Exception {
         try {
             Log.writeLog(project.getName(), "InterRelationSmells", "Starting Generating Report Inter Relation Smells Service " + project.getName());
             Log.writeLog("Mounting Project (branches, commits and commit changes) " + project.getName());
@@ -57,7 +74,9 @@ public class InterRelationSmellsService {
             for (Branch branch : project.getBranches()) {
                 analyseBranch(branch);
             }
-            pw.close();
+            pwCsv.close();
+            pwCommands.close();
+            pwCsvClass.close();
             Log.writeLog("Done.");            
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,29 +108,34 @@ public class InterRelationSmellsService {
         Log.writeLog("Analysing class " + javaClass.getName());
         Set<SmellEnum> detectedSmells = new LinkedHashSet<>();
         List<ClassCommitChange> arquivosCommit = javaClass.getChanges();
+        
         for (ClassCommitChange arquivoCommit : arquivosCommit) {
             detectedSmells.addAll(analyseChange(arquivoCommit));
         }
         javaClass.setSmells(detectedSmells);
         List<SmellEnum> detectedSmellsList = new ArrayList<>(detectedSmells);
+        Collections.sort(detectedSmellsList);
         if (detectedSmellsList.size() > 0) {
-            for (int j = 0; j < SmellEnum.values().length; j++) {
-                SmellEnum smell = SmellEnum.values()[j];
-                if (detectedSmellsList.contains(smell)) {
-                    pw.write("y");
-                } else {
-                    pw.write("?");
-                }
-                if (j == SmellEnum.values().length - 1) {
-                    pw.write("\n");
-                } else {
-                    pw.write(",");
-                }
-            }
+        	pwCsvClass.write(cast(detectedSmellsList,true)+"#"+javaClass.toString()+"\n");            
+        	pwCsv.write(cast(detectedSmellsList,false)+"\n");
         }
     }
 
-    private Set<SmellEnum> analyseChange(ClassCommitChange change) {
+    private String cast(List<SmellEnum> detectedSmellsList,boolean increment) {
+    	String value = "";
+    	for (SmellEnum se: detectedSmellsList) {
+    		value+= se.toString()+";";
+    	}
+    	value = value.substring(0, value.length()-1);
+    	if (increment) {
+	    	for (int i = value.length();i<90;i++) {
+	    		value+=" ";
+	    	}
+    	}
+    	return value;
+	}
+
+	private Set<SmellEnum> analyseChange(ClassCommitChange change) {
         List<DetectedSmell> smells = change.getSmells();
         Set<SmellEnum> detectedSmells = new LinkedHashSet<>();
         for (DetectedSmell smell : smells) {

@@ -43,12 +43,20 @@ public enum SmellEnum {
         throw new ValidationException("Cant find smell "+name+" in SmellEnum");
     }
 
-    public static String getNomeSmells() {
-        String retorno = "";
+    public static String getNameSmells(String separator) {
+        String value = "";
         for (SmellEnum smell : SmellEnum.values()) {
-            retorno += "@ATTRIBUTE " + smell.toString() + " {y,n}\n";
+            value += smell.toString() + ";";
         }
-        return retorno;
+        return value.substring(0,value.length() - 1);
+    }
+    
+    public static String getNameSmellsR(String parameter) {
+        String value = "(";
+        for (SmellEnum smell : SmellEnum.values()) {
+            value += "\""+smell.toString() + "="+parameter+"\",";
+        }
+        return value.substring(0,value.length() - 1)+")";
     }
 
 }

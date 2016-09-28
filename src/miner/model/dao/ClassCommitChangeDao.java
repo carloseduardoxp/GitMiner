@@ -89,7 +89,7 @@ public class ClassCommitChangeDao {
 	private List<ClassCommitChange> convertToClassCommitChange(ResultSet rs,Class javaClass) throws ValidationException,SQLException {		
         List<ClassCommitChange> changes = new ArrayList<>();
         while (rs.next()) {
-        	ClassCommitChange classCommitChange = new ClassCommitChange(javaClass,new CommitChange(rs.getInt(2)));
+        	ClassCommitChange classCommitChange = new ClassCommitChange(javaClass,new CommitChange(rs.getInt(1)));
             changes.add(classCommitChange);
         }
         return changes;

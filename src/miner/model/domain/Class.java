@@ -137,6 +137,11 @@ public class Class {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return id + "-" + name;
+	}
+
     
     
     
