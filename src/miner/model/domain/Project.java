@@ -18,6 +18,17 @@ public class Project {
     public Project() {
 
     }
+    
+    public Project(String name,String url) {
+    	this.name = name;
+    	this.url = url;
+    }
+    
+    public Project(Integer id,String name,String url) {
+    	this.id = id;
+    	this.name = name;
+    	this.url = url;
+    }
 
     public void validate() throws ValidationException {
         if (name == null || name.equals("")) {

@@ -111,6 +111,7 @@ public class ImportGitProjectService {
             GitExtractor.downloadBranch(branch);
         }
         Log.writeLog("Looking for commits in Branch " + branch.getName());
+        observer.sendStatusMessage("Searching commits");
         List<Commit> commits = GitExtractor.getCommits(branch);
         int totalCommits = commits.size();
         Log.writeLog("Find " + totalCommits + "commits in Branch " + branch.getName());
