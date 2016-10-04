@@ -62,9 +62,12 @@ public class GitExtractor {
 		walk.sort(RevSort.REVERSE);
 		walk.markStart(walk.parseCommit(repo.resolve(Constants.HEAD)));
 		RevTree oldRevTree = null;
-
+		int i = 0;
 		for (RevCommit revCommit : walk) {
-
+			if (i % 1000 == 0) {
+				System.out.println("Analysed "+i+" commits ");
+			}
+			i++;
 			Commit commit = new Commit(revCommit.getName(), revCommit.getAuthorIdent().getName(),
 					revCommit.getAuthorIdent().getEmailAddress(), revCommit.getAuthorIdent().getWhen(),
 					revCommit.getCommitterIdent().getName(), revCommit.getCommitterIdent().getEmailAddress(),

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2001-2014 Yann-Gaël Guéhéneuc and others.
+ * Copyright (c) 2001-2014 Yann-Gaï¿½l Guï¿½hï¿½neuc and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v2.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * 
  * Contributors:
- *     Yann-Gaël Guéhéneuc and others, see in file; API and its implementation
+ *     Yann-Gaï¿½l Guï¿½hï¿½neuc and others, see in file; API and its implementation
  ******************************************************************************/
 /*
  * (c) Copyright 2000-2002 Yann-Gal GuÃ©hÃ©neuc,
@@ -435,10 +435,10 @@ class MethodInvocation extends Constituent implements IMethodInvocation {
 			// but I also set to null the clone of this very method invocation, which
 			// I am now building, leading to a null constituent being added to the
 			// first cloned method... leading to an error message from PADL...
-			//	if (this.calledMethod.getClone() == null) {
-			//		this.calledMethod.startCloneSession();
-			//		this.calledMethod.performCloneSession();
-			//	}
+				if (this.calledMethod.getClone() == null) {
+					this.calledMethod.startCloneSession();
+					this.calledMethod.performCloneSession();
+				}
 			clonedMethodInvocation.calledMethod =
 				(IOperation) this.calledMethod.getClone();
 		}

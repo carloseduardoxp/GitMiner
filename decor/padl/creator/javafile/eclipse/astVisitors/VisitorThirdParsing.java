@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
@@ -1306,7 +1308,7 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 
 		// FIXME: Added by Yann
 		if (typeBinding != null) {
-			final int cardinality = Constants.CARDINALITY_MANY;
+			final int cardinality = Constants.CARDINALITY_ONE+StringUtils.countMatches(typeBinding.getName(),"[");
 			final int visibility = this.myCurrentOperation.getVisibility();
 
 			final IEntity targetEntity =

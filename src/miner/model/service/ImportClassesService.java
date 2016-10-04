@@ -97,7 +97,9 @@ public class ImportClassesService {
 				notifyObservers(totalCommits, i);
 			}
 		}
-		notifyObservers(totalCommits, i);		
+		if (i > 0) {
+			notifyObservers(totalCommits, i);
+		}
 		if (classCommitChanges.keySet().size() > 0) {
 			classDao.insertClasses(branch, classCommitChanges, connection);
 		}
@@ -105,7 +107,7 @@ public class ImportClassesService {
 
 	private void notifyObservers(int totalCommits, int commitsPerformed) {
 		Double d = new Double(commitsPerformed) / new Double(totalCommits);
-		int progress = new Double(d * 100).intValue();
+		int progress = new Double(d * 100).intValue()+1;
 		observer.sendCurrentPercent(progress);
 		observer.sendStatusMessage("Analysed " + commitsPerformed + " commits of " + totalCommits);
 		Log.writeLog("Analysed " + commitsPerformed + " commits of " + totalCommits);
@@ -156,7 +158,8 @@ public class ImportClassesService {
 
 	public List<String> analyseCodeLevelModelFromJavaSourceFiles(String path, String classPath,String name) throws Exception {		
 		final CompleteJavaFileCreator creator = new CompleteJavaFileCreator(new String[] { path }, new String[] { "" },
-				new String[] { classPath });
+				//new String[] { "/home/carloseduardo/Mestrado/commits/Commons-Collections/trunk/715e28309f18027ace98eacd272f2de9909ec676/src/java/org/apache/commons/collections/decorators/CompositeCollection.java" });
+				new String[] { classPath  });
 		final ICodeLevelModel codeLevelModel = Factory.getInstance().createCodeLevelModel(name);
 		codeLevelModel.create(creator);
 		final padl.creator.javafile.eclipse.astVisitors.LOCModelAnnotator annotator2 = new padl.creator.javafile.eclipse.astVisitors.LOCModelAnnotator(

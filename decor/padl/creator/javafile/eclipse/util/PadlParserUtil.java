@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2001-2014 Yann-Gaël Guéhéneuc and others.
+ * Copyright (c) 2001-2014 Yann-Gaï¿½l Guï¿½hï¿½neuc and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v2.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * 
  * Contributors:
- *     Yann-Gaël Guéhéneuc and others, see in file; API and its implementation
+ *     Yann-Gaï¿½l Guï¿½hï¿½neuc and others, see in file; API and its implementation
  ******************************************************************************/
 package padl.creator.javafile.eclipse.util;
 
@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
@@ -28,6 +29,7 @@ import padl.kernel.IFirstClassEntity;
 import padl.kernel.IPackage;
 import padl.kernel.IParameter;
 import padl.kernel.impl.Factory;
+import padl.util.Util;
 
 public class PadlParserUtil {
 
@@ -110,8 +112,8 @@ public class PadlParserUtil {
 			methodSignature.append(parameter.getDisplayTypeName());
 			// to take into account multiple dimensions arrays as I saw in padl
 			// .class
-			int arrayDim = Integer.parseInt(parameter.getComment());
-			for (int i = 1; i < arrayDim; i++) {
+			//int arrayDim = Integer.parseInt(parameter.getComment());
+			for (int i = 1; i < parameter.getCardinality(); i++) {
 				methodSignature.append("[]");
 			}
 			// clear this field
@@ -120,8 +122,8 @@ public class PadlParserUtil {
 				methodSignature.append(", ");
 				parameter = iter.next();
 				methodSignature.append(parameter.getDisplayTypeName());
-				arrayDim = Integer.parseInt(parameter.getComment());
-				for (int i = 1; i < arrayDim; i++) {
+				//arrayDim = Integer.parseInt(parameter.getComment());
+				for (int i = 1; i < parameter.getCardinality(); i++) {
 					methodSignature.append("[]");
 				}
 				parameter.setComment("");
@@ -265,20 +267,25 @@ public class PadlParserUtil {
 	 * @return
 	 */
 	public static int getDim(final ITypeBinding aTypeBinding) {
-		if (aTypeBinding.isArray()) {
-			return Constants.CARDINALITY_MANY;
+		if (aTypeBinding.isArray()) {	
+			if (Util.isCollection((aTypeBinding.getQualifiedName().replace("[","").replace("]","")).toCharArray())) {
+				return Constants.CARDINALITY_MANY+StringUtils.countMatches(aTypeBinding.getName(),"[");	
+			} else {
+				return Constants.CARDINALITY_ONE+StringUtils.countMatches(aTypeBinding.getName(),"[");
+			}
+			
+			//return Constants.CARDINALITY_MANY;
 		}
 
 		ITypeBinding typeBinding = aTypeBinding;
 		if (aTypeBinding.isParameterizedType()) {
 			typeBinding = aTypeBinding.getErasure();
 		}
-		if (padl.util.Util.isArrayOrCollection(typeBinding
-			.getQualifiedName()
-			.toCharArray())) {
-			return Constants.CARDINALITY_MANY;
-		}
-		else {
+		if (Util.isCollection((aTypeBinding.getQualifiedName().replace("[","").replace("]","")).toCharArray())) {
+			return Constants.CARDINALITY_MANY+StringUtils.countMatches(aTypeBinding.getName(),"[");	
+		} else if (Util.isArray(typeBinding.getQualifiedName().toCharArray())){
+			return Constants.CARDINALITY_ONE+StringUtils.countMatches(aTypeBinding.getName(),"[");
+		} else {
 			return Constants.CARDINALITY_ONE;
 		}
 	}
