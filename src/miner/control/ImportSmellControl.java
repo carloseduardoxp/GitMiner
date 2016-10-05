@@ -11,15 +11,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.jdesktop.observablecollections.ObservableCollections;
+
 import miner.model.dao.ProjectDao;
 import miner.model.dao.structure.DaoFactory;
+import miner.model.domain.Metric;
 import miner.model.domain.Project;
 import miner.model.domain.SmellEnum;
 import miner.model.service.ImportCodeSmellsService;
-import miner.util.exception.ValidationException;
 import miner.model.service.Observer;
 import miner.util.exception.ConnectionException;
-import org.jdesktop.observablecollections.ObservableCollections;
+import miner.util.exception.ValidationException;
 
 /**
  *
@@ -97,6 +100,10 @@ public class ImportSmellControl {
 
     public List<SmellEnum> getSmells() {
         return Arrays.asList(SmellEnum.values());
+    }
+    
+    public List<Metric> getMetrics() {
+        return Arrays.asList(Metric.values());
     }
        
     public void addPropertyChangeListener(PropertyChangeListener e) {

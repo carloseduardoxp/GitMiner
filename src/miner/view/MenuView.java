@@ -61,6 +61,11 @@ public final class MenuView extends javax.swing.JFrame {
         mnuIteExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Git Miner - created by carloseduardoxpto@gmail.com");
+        setLocationByPlatform(true);
+        setResizable(false);
+
+        menuBar.setToolTipText("");
 
         mnuConfiguration.setText("Configuration");
 
@@ -99,7 +104,7 @@ public final class MenuView extends javax.swing.JFrame {
 
         mnuIteSmells.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_MASK));
         mnuIteSmells.setMnemonic('s');
-        mnuIteSmells.setText("Code Smells");
+        mnuIteSmells.setText("Code Smells & Metrics");
         mnuIteSmells.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnuIteSmellsActionPerformed(evt);

@@ -68,11 +68,14 @@ public class ImportCodeSmellsView extends javax.swing.JInternalFrame implements 
         prbImport = new javax.swing.JProgressBar();
         lblMsg = new javax.swing.JLabel();
         cmbAllCodeSmells = new javax.swing.JCheckBox();
+        scrMetrics = new javax.swing.JScrollPane();
+        lstMetrics = new javax.swing.JList<>();
+        lblMetrics = new javax.swing.JLabel();
 
         jLabel1.setText("jLabel1");
 
         setClosable(true);
-        setTitle("Import Code Smells");
+        setTitle("Import Code Smells & Metrics");
 
         pnlFields.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -86,12 +89,6 @@ public class ImportCodeSmellsView extends javax.swing.JInternalFrame implements 
         org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${control.selectedProject}"), cmbProject, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
         bindingGroup.addBinding(binding);
 
-        lstSmells.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-
         eLProperty = org.jdesktop.beansbinding.ELProperty.create("${control.smells}");
         org.jdesktop.swingbinding.JListBinding jListBinding = org.jdesktop.swingbinding.SwingBindings.createJListBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, eLProperty, lstSmells);
         bindingGroup.addBinding(jListBinding);
@@ -102,7 +99,7 @@ public class ImportCodeSmellsView extends javax.swing.JInternalFrame implements 
 
         lblSmells.setText("Smells:");
 
-        btnImport.setText("Import Smells");
+        btnImport.setText("Import Smells & Metrics");
         btnImport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnImportActionPerformed(evt);
@@ -116,6 +113,16 @@ public class ImportCodeSmellsView extends javax.swing.JInternalFrame implements 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${control.allCodeSmells}"), cmbAllCodeSmells, org.jdesktop.beansbinding.BeanProperty.create("selected"));
         bindingGroup.addBinding(binding);
 
+        lstMetrics.setFixedCellWidth(200);
+
+        eLProperty = org.jdesktop.beansbinding.ELProperty.create("${control.metrics}");
+        jListBinding = org.jdesktop.swingbinding.SwingBindings.createJListBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, eLProperty, lstMetrics);
+        bindingGroup.addBinding(jListBinding);
+
+        scrMetrics.setViewportView(lstMetrics);
+
+        lblMetrics.setText("Metrics:");
+
         javax.swing.GroupLayout pnlFieldsLayout = new javax.swing.GroupLayout(pnlFields);
         pnlFields.setLayout(pnlFieldsLayout);
         pnlFieldsLayout.setHorizontalGroup(
@@ -124,17 +131,20 @@ public class ImportCodeSmellsView extends javax.swing.JInternalFrame implements 
                 .addContainerGap()
                 .addGroup(pnlFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblMsg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(prbImport, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 558, Short.MAX_VALUE)
+                    .addComponent(prbImport, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(pnlFieldsLayout.createSequentialGroup()
                         .addGroup(pnlFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(pnlFieldsLayout.createSequentialGroup()
                                 .addGroup(pnlFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(lblProject)
-                                    .addComponent(lblSmells))
+                                    .addComponent(lblSmells)
+                                    .addComponent(lblMetrics, javax.swing.GroupLayout.Alignment.TRAILING))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(pnlFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(scrSmells)
-                                    .addComponent(cmbProject, 0, 344, Short.MAX_VALUE)))
+                                .addGroup(pnlFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(scrMetrics, javax.swing.GroupLayout.PREFERRED_SIZE, 650, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(pnlFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(cmbProject, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(scrSmells, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))))
                             .addComponent(btnImport)
                             .addComponent(cmbAllCodeSmells))
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -153,13 +163,21 @@ public class ImportCodeSmellsView extends javax.swing.JInternalFrame implements 
                     .addComponent(scrSmells, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmbAllCodeSmells)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlFieldsLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblMetrics)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFieldsLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(scrMetrics, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)))
                 .addComponent(btnImport)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblMsg)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(prbImport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -170,7 +188,7 @@ public class ImportCodeSmellsView extends javax.swing.JInternalFrame implements 
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlFields, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(pnlFields, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         bindingGroup.bind();
@@ -238,12 +256,15 @@ public class ImportCodeSmellsView extends javax.swing.JInternalFrame implements 
     private javax.swing.JCheckBox cmbAllCodeSmells;
     private javax.swing.JComboBox<String> cmbProject;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel lblMetrics;
     private javax.swing.JLabel lblMsg;
     private javax.swing.JLabel lblProject;
     private javax.swing.JLabel lblSmells;
+    private javax.swing.JList<String> lstMetrics;
     private javax.swing.JList<String> lstSmells;
     private javax.swing.JPanel pnlFields;
     private javax.swing.JProgressBar prbImport;
+    private javax.swing.JScrollPane scrMetrics;
     private javax.swing.JScrollPane scrSmells;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
