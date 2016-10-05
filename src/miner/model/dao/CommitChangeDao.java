@@ -54,6 +54,7 @@ public class CommitChangeDao {
         parameters.put(2,commitChange.getOldFileName());
         parameters.put(3,commitChange.getNewFileName());
         parameters.put(4,commitChange.getCommit().getHash());
+        parameters.put(5,commitChange.isLocalSource());
         return parameters;        
     }       
     
@@ -67,7 +68,7 @@ public class CommitChangeDao {
         }
         for (CommitChange commitChange: commitsChange) {
         	if (commitChange.getSourceCode() == null) {
-        		if (commitChange.getChangeType() == ChangeType.DELETE) {
+        		if (!commitChange.isLocalSource()) {
         			continue;
         		} else {
         			throw new ValidationException("CommitChange dont have source "+commitChange);
@@ -93,6 +94,7 @@ public class CommitChangeDao {
             change.setChangeType(ChangeType.valueOf(rs.getString(2)));
             change.setOldFileName(rs.getString(3));
             change.setNewFileName(rs.getString(4));
+            change.setLocalSource(rs.getBoolean(5));
             change.setCommit(commit);
             changes.add(change);
         }

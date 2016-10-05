@@ -18,6 +18,8 @@ public class CommitChange {
     
     private byte[] sourceCode;
     
+    private boolean localSource;
+    
     private List<ClassCommitChange> classCommitchange;
 
     public CommitChange() {
@@ -27,17 +29,18 @@ public class CommitChange {
         this.id = id;
     }
 
-    public CommitChange(ChangeType changeType, String oldFileName, String newFileName, Commit commit) {
-        this(changeType,oldFileName,newFileName,null,commit);
+    public CommitChange(ChangeType changeType, String oldFileName, String newFileName, Commit commit,boolean localSource) {
+        this(changeType,oldFileName,newFileName,null,commit,localSource);
     }
     
-    public CommitChange(ChangeType changeType, String oldFileName, String newFileName, byte[] sourceCode,Commit commit) {
+    public CommitChange(ChangeType changeType, String oldFileName, String newFileName, byte[] sourceCode,Commit commit,boolean localSource) {
         super();
         this.sourceCode = sourceCode;
         this.changeType = changeType;
         this.oldFileName = oldFileName;
         this.newFileName = newFileName;
         this.commit = commit;
+        this.localSource = localSource;
     }
         
     public String getLocalPath() {
@@ -98,6 +101,14 @@ public class CommitChange {
 
 	public void setSourceCode(byte[] sourceCode) {
 		this.sourceCode = sourceCode;
+	}	
+
+	public boolean isLocalSource() {
+		return localSource;
+	}
+
+	public void setLocalSource(boolean localSource) {
+		this.localSource = localSource;
 	}
 
 	@Override

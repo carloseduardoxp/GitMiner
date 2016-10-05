@@ -14,6 +14,7 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -64,7 +65,7 @@ public class GitExtractor {
 		RevTree oldRevTree = null;
 		int i = 0;
 		for (RevCommit revCommit : walk) {
-			if (i % 1000 == 0) {
+			if (i % 100 == 0) {
 				System.out.println("Analysed "+i+" commits ");
 			}
 			i++;
@@ -90,7 +91,7 @@ public class GitExtractor {
 	}
 
 	private static List<CommitChange> getChanges(Git git, RevCommit revCommit,RevTree oldRevTree,Commit commit) 
-			throws IOException,GitAPIException {
+			throws IOException,GitAPIException { 
 		List<CommitChange> changes = new ArrayList<>();
 		
 		RevTree revTree = revCommit.getTree();
@@ -101,18 +102,25 @@ public class GitExtractor {
 		
 		if (oldRevTree != null) {											
     		oldTreeIter.reset(reader, oldRevTree.getId());	    			    		
-		} 
+		} 			
 		
 		List<DiffEntry> diffs = git.diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
 		for (DiffEntry entry : diffs) {
+
+			boolean localSource = false;
 			byte[] sourceCode = null;
-			if (entry.getChangeType() != ChangeType.DELETE) {
-				ObjectLoader loader = git.getRepository().open(entry.getNewId().toObjectId());				
-				InputStream in = loader.openStream();
-				sourceCode = IOUtils.toByteArray(in);
+			if (entry.getChangeType() != ChangeType.DELETE && entry.getNewPath().endsWith(".java")) {
+				try {
+					ObjectLoader loader = git.getRepository().open(entry.getNewId().toObjectId());				
+					InputStream in = loader.openStream();
+					sourceCode = IOUtils.toByteArray(in);
+					localSource = true;
+				} catch(MissingObjectException moe) {
+					Log.writeLog("Cant find object "+entry+" - "+moe);
+				}
 			}
 			CommitChange change = new CommitChange(entry.getChangeType(), entry.getOldPath(), 
-					                               entry.getNewPath(), sourceCode,commit);
+					                               entry.getNewPath(), sourceCode,commit,localSource);
 			changes.add(change);
 		}	    			    					
 		return changes;

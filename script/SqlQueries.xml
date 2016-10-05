@@ -36,7 +36,7 @@
         	 
         <sql name="changeCommitsByCommit">
             <query>	
-                SELECT CC.CD_COMMIT_CHANGE,CC.DS_CHANGE_TYPE,NM_OLD_FILENAME,NM_NEW_FILENAME
+                SELECT CC.CD_COMMIT_CHANGE,CC.DS_CHANGE_TYPE,NM_OLD_FILENAME,NM_NEW_FILENAME,CC.FL_LOCAL_SOURCE
                 FROM TB_COMMIT_CHANGE CC
                 WHERE CC.DS_HASH = ?
             </query>
@@ -228,7 +228,7 @@
         <sql name="saveNewCommitChange">
             <query>	
                 INSERT INTO TB_COMMIT_CHANGE (DS_CHANGE_TYPE,NM_OLD_FILENAME,NM_NEW_FILENAME,
-                DS_HASH) VALUES (?,?,?,?)
+                DS_HASH,FL_LOCAL_SOURCE) VALUES (?,?,?,?,?)
             </query>		
         </sql>               
         
