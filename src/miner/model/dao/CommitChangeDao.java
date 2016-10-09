@@ -136,6 +136,28 @@ public class CommitChangeDao {
             throw new ValidationException("Error while updating class: No affectedRows CommitChangeID "+change+
                     " ClassID "+classId);
         }
+    }    
+    
+    public CommitChange getCommitChange(Integer id,ICrudDao dao) throws ValidationException,SQLException,ConnectionException {
+    	CommitDao commitDao = DaoFactory.getCommitDao();
+        Map<Integer, Object> parameters = new HashMap<>();
+        parameters.put(1,id);
+        ResultSet rs = dao.search("changeCommitsById",parameters);
+        CommitChange change = convertToChangeCommit(rs);
+        change.setCommit(commitDao.getCommit(rs.getString(6), dao));
+        return change;
     }
     
+    private CommitChange convertToChangeCommit(ResultSet rs) throws ValidationException,SQLException {    	
+        if (rs.next()) {
+            CommitChange change = new CommitChange();
+            change.setId(rs.getInt(1));
+            change.setChangeType(ChangeType.valueOf(rs.getString(2)));
+            change.setOldFileName(rs.getString(3));
+            change.setNewFileName(rs.getString(4));
+            change.setLocalSource(rs.getBoolean(5));
+            return change;
+        }
+        throw new ValidationException("Cant find commitchange");
+    }
 }

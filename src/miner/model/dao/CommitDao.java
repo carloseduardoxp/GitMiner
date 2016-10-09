@@ -8,12 +8,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
+
 import miner.model.dao.structure.CrudDao;
 import miner.model.dao.structure.DaoFactory;
 import miner.model.dao.structure.ICrudDao;
 import miner.model.dao.structure.xml.TypeQuery;
 import miner.model.domain.Branch;
 import miner.model.domain.Commit;
+import miner.model.domain.CommitChange;
 import miner.util.exception.ConnectionException;
 import miner.util.exception.ValidationException;
 
@@ -88,5 +91,30 @@ public class CommitDao {
         }
         return commits;
     }
+    
+    public Commit getCommit(String hash,ICrudDao dao) throws ValidationException,SQLException,ConnectionException {
+        Map<Integer, Object> parameters = new HashMap<>();
+        parameters.put(1,hash);
+        ResultSet rs = dao.search("commitByHash",parameters);
+        return convertToCommit(rs);
+    }
+    
+    private Commit convertToCommit(ResultSet rs) throws ValidationException,SQLException {
+        if (rs.next()) {
+            Commit commit = new Commit();
+            commit.setHash(rs.getString(1));
+            commit.setAuthorName(rs.getString(2));
+            commit.setAuthorEmail(rs.getString(3));
+            commit.setAuthorDate(rs.getDate(4));
+            commit.setCommitterName(rs.getString(5));
+            commit.setCommitterEmail(rs.getString(6));
+            commit.setCommitterDate(rs.getDate(7));
+            commit.setFullMessage(rs.getString(8));
+            commit.setShortMessage(rs.getString(9));
+            return commit;
+        }
+        throw new ValidationException("Cant find commit");
+    }
+
 
 }

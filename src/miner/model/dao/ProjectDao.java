@@ -55,10 +55,14 @@ public class ProjectDao {
     }
 
     public Project mountProject(Project project) throws ValidationException,SQLException,ConnectionException {        
+        return mountProject(project,false);
+    }
+    
+    public Project mountProject(Project project,boolean report) throws ValidationException,SQLException,ConnectionException {        
         Connection connection = JdbcConnection.getConnection();
         ICrudDao dao = new CrudDao(connection);
         BranchDao branchDao = DaoFactory.getBranchDao();
-        project.setBranches(branchDao.mountBranches(project,dao));  
+        project.setBranches(branchDao.mountBranches(project,dao,report));  
         connection.close();
         return project;
     }

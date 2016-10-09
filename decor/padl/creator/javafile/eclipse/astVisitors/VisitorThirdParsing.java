@@ -133,18 +133,14 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	private final List<String> listOfVisitedMemberEntities;
 
 	// Stack for managing member entities
-	private final Stack<IFirstClassEntity> entitiesStack =
-		new Stack<IFirstClassEntity>();
+	private final Stack<IFirstClassEntity> entitiesStack = new Stack<IFirstClassEntity>();
 
 	public VisitorThirdParsing(final ICodeLevelModel aCodeLevelModel) {
 		this.listOfVisitedEntities = new ArrayList<String>();
 		this.listOfVisitedMemberEntities = new ArrayList<String>();
 		this.padlModel = aCodeLevelModel;
 
-		ProxyConsole
-			.getInstance()
-			.debugOutput()
-			.println("Beginning of the third and last pass...");
+		ProxyConsole.getInstance().debugOutput().println("Beginning of the third and last pass...");
 	}
 
 	/*
@@ -649,10 +645,7 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	@Override
 	public void endVisit(final MethodDeclaration node) {
 		if (this.myCurrentOperation != null) {
-			final char[] operationID =
-				PadlParserUtil.computeMethodNodeSignature(
-					node,
-					this.padlModel,
+			final char[] operationID = PadlParserUtil.computeMethodNodeSignature(node, this.padlModel,
 					this.myCurrentPackage);
 			if (Arrays.equals(this.myCurrentOperation.getID(), operationID)) {
 				this.myCurrentOperation = null;
@@ -1067,13 +1060,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	@Override
 	public void endVisit(final TypeDeclaration node) {
 		if (this.myCurrentEntity != null && node.resolveBinding() != null) {
-			final String nodeId =
-				PadlParserUtil.renameWith$(node
-					.resolveBinding()
-					.getQualifiedName(), node
-					.resolveBinding()
-					.getPackage()
-					.getName());
+			final String nodeId = PadlParserUtil.renameWith$(node.resolveBinding().getQualifiedName(),
+					node.resolveBinding().getPackage().getName());
 			// check if it is really the end of the current entity
 
 			if (this.myCurrentEntity.getDisplayID().equals(nodeId)) {
@@ -1085,8 +1073,7 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 
 					this.myCurrentEntity = this.entitiesStack.pop();
 
-				}
-				else {
+				} else {
 					// For the case where there is one public class and many
 					// others classes in the same file but those classes are not
 					// members of the first
@@ -1308,22 +1295,14 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 
 		// FIXME: Added by Yann
 		if (typeBinding != null) {
-			final int cardinality = Constants.CARDINALITY_ONE+StringUtils.countMatches(typeBinding.getName(),"[");
+			final int cardinality = Constants.CARDINALITY_ONE + StringUtils.countMatches(typeBinding.getName(), "[");
 			final int visibility = this.myCurrentOperation.getVisibility();
 
-			final IEntity targetEntity =
-				PadlParserUtil.getEntityOrGetOrCreateGhost(
-					false,
-					typeBinding,
-					this.padlModel,
+			final IEntity targetEntity = PadlParserUtil.getEntityOrGetOrCreateGhost(false, typeBinding, this.padlModel,
 					this.myCurrentPackage.getDisplayID());
 			if (!(targetEntity instanceof IPrimitiveEntity)) {
-				final IMethodInvocation methodInvocation =
-					this.padlModel.getFactory().createMethodInvocation(
-						IMethodInvocation.INSTANCE_CREATION,
-						cardinality,
-						visibility,
-						(IFirstClassEntity) targetEntity,
+				final IMethodInvocation methodInvocation = this.padlModel.getFactory().createMethodInvocation(
+						IMethodInvocation.INSTANCE_CREATION, cardinality, visibility, (IFirstClassEntity) targetEntity,
 						null);
 
 				methodInvocation.setComment(node.toString());
@@ -1348,9 +1327,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ArrayType
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * ArrayType )
 	 */
 	@Override
 	public boolean visit(final ArrayType node) {
@@ -1371,9 +1349,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.Assignment
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * Assignment )
 	 */
 	@Override
 	public boolean visit(final Assignment node) {
@@ -1473,25 +1450,16 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 
 		final ITypeBinding typeBinding = node.resolveTypeBinding();
 		if (typeBinding != null) {
-			final IFirstClassEntity targetEntity =
-				(IFirstClassEntity) PadlParserUtil.getEntityOrGetOrCreateGhost(
-					false,
-					typeBinding,
-					this.padlModel,
-					this.myCurrentPackage.getDisplayID());
+			final IFirstClassEntity targetEntity = (IFirstClassEntity) PadlParserUtil.getEntityOrGetOrCreateGhost(false,
+					typeBinding, this.padlModel, this.myCurrentPackage.getDisplayID());
 
 			final int cardinality = PadlParserUtil.getDim(typeBinding);
 			final int visibility = this.myCurrentOperation.getVisibility();
 
 			java.lang.reflect.Modifier.toString(9);
 
-			final IMethodInvocation methodInvocation =
-				this.padlModel.getFactory().createMethodInvocation(
-					IMethodInvocation.INSTANCE_CREATION,
-					cardinality,
-					visibility,
-					targetEntity,
-					null);
+			final IMethodInvocation methodInvocation = this.padlModel.getFactory().createMethodInvocation(
+					IMethodInvocation.INSTANCE_CREATION, cardinality, visibility, targetEntity, null);
 
 			methodInvocation.setComment(node.toString());
 
@@ -1626,37 +1594,50 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 		if (this.myCurrentOperation == null) {
 			return false;
 		}
-
-		// final ITypeBinding typeBinding = node.resolveTypeBinding();
+		// *******************************************************************************
+		// Coloquei isso porque no LCOM5 (metrica) ele conta os métodos que
+		// acessam algum campo (atributo) da classe.
 		//
-		// final int cardinality = PadlParserUtil.getDim(typeBinding);
-		// final int visibility = this.myCurrentOperation.getVisibility();
-		//
-		// final IFirstClassEntity targetEntity = (IFirstClassEntity)
-		// PadlParserUtil
-		// .getEntityOrGetOrCreateGhost(false, typeBinding,
-		// this.padlModel, this.myCurrentPackage.getDisplayID());
-		// final int type = -1;
-
-		// // if(this.myCurrentOperation.isStatic()){
-		// // if(node.getExpression())
-		// // }
-		// if (!(targetEntity instanceof IPrimitiveEntity)) {
-		// try {
-		//
-		// final IMethodInvocation methodInvocation = this.padlModel
-		// .getFactory().createMethodInvocation(
-		// IMethodInvocation.INSTANCE_CREATION,
-		// cardinality, visibility, targetEntity, null);
-		//
-		// methodInvocation.setComment(node.toString());
-		//
-		// this.myCurrentOperation.addConstituent(methodInvocation);
-		//
-		// } catch (final ModelDeclarationException e) {
-		// e.printStackTrace(Output.getInstance().errorOutput());
+		// private String A="";
+		// //
+		// public void aaaa(){
+		// //
+		// this.A="dddd";
+		// //
 		// }
-		// }
+		// Se não colocar ele não conta o metodo aaa() para acessar o atributo A
+		//
+		// Ele estava pegando apenas invocações (ex.: int i=this.A.length();).
+		// Então o LCOM5 (Henderson-Sellers Lack of Cohesion Of Methods) fica
+		// errado.
+		// Elder
+		final ITypeBinding typeBinding = node.resolveTypeBinding();
+		final int cardinality = PadlParserUtil.getDim(typeBinding);
+		final int visibility = this.myCurrentOperation.getVisibility();
+
+		final IFirstClassEntity targetEntity = (IFirstClassEntity) PadlParserUtil.getEntityOrGetOrCreateGhost(false,
+				typeBinding, this.padlModel, this.myCurrentPackage.getDisplayID());
+		// final int type = IMethodInvocation.CLASS_INSTANCE_FROM_FIELD; //Use
+		final int type = IMethodInvocation.INSTANCE_INSTANCE_FROM_FIELD; // Aggregation
+
+		if (!(targetEntity instanceof IPrimitiveEntity)) {
+			IFirstClassEntity fieldDeclaringEntity = null;
+			fieldDeclaringEntity = MethodInvocationUtils.getFieldDeclaringEntity(this.padlModel, node,
+					this.myCurrentEntity, this.myCurrentPackage.getDisplayID());
+			final IMethodInvocation methodInvocation = this.padlModel.getFactory().createMethodInvocation(type,
+					cardinality, visibility, targetEntity, fieldDeclaringEntity);
+
+			methodInvocation.setComment(node.toString());
+
+			final IField invocationField = MethodInvocationUtils.getFieldInvocation(this.padlModel, node,
+					fieldDeclaringEntity);
+			final List<IField> listCallingFields = new ArrayList<IField>();
+			listCallingFields.add(invocationField);
+			methodInvocation.setCallingField(listCallingFields);
+			this.myCurrentOperation.addConstituent(methodInvocation);
+		}
+		// *******************************************************************************
+		// Elder
 		return super.visit(node);
 	}
 
@@ -1740,9 +1721,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.Javadoc
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * Javadoc )
 	 */
 	@Override
 	public boolean visit(final Javadoc node) {
@@ -1785,9 +1765,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MemberRef
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * MemberRef )
 	 */
 	@Override
 	public boolean visit(final MemberRef node) {
@@ -1813,21 +1792,14 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	 */
 	@Override
 	public boolean visit(final MethodDeclaration node) {
-		if (node.getParent().getNodeType() == ASTNode.TYPE_DECLARATION
-				&& this.myCurrentEntity != null) {
+		if (node.getParent().getNodeType() == ASTNode.TYPE_DECLARATION && this.myCurrentEntity != null) {
 
-			final char[] operationID =
-				PadlParserUtil.computeMethodNodeSignature(
-					node,
-					this.padlModel,
+			final char[] operationID = PadlParserUtil.computeMethodNodeSignature(node, this.padlModel,
 					this.myCurrentPackage);
-			this.myCurrentOperation =
-				(IOperation) this.myCurrentEntity
-					.getConstituentFromID(operationID);
+			this.myCurrentOperation = (IOperation) this.myCurrentEntity.getConstituentFromID(operationID);
 
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -1856,17 +1828,11 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 		if (methodBinding != null) {
 			IMethodInvocation methodInvocation = null;
 
-			final boolean invocationThroughField =
-				MethodInvocationUtils.isInvocationThroughField(expression);
-			final boolean invocationThroughStaticField =
-				MethodInvocationUtils
+			final boolean invocationThroughField = MethodInvocationUtils.isInvocationThroughField(expression);
+			final boolean invocationThroughStaticField = MethodInvocationUtils
 					.isInvocationThroughStaticField(expression);
-			final int type =
-				MethodInvocationUtils.getMethodInvocationType(
-					this.myCurrentOperation.getVisibility(),
-					methodBinding.getModifiers(),
-					invocationThroughField,
-					invocationThroughStaticField);
+			final int type = MethodInvocationUtils.getMethodInvocationType(this.myCurrentOperation.getVisibility(),
+					methodBinding.getModifiers(), invocationThroughField, invocationThroughStaticField);
 
 			final int visibility = this.myCurrentOperation.getVisibility();
 			int cardinality = Constants.CARDINALITY_ONE;
@@ -1876,10 +1842,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 				// an array or a list, the cardinality is MANY
 				if (expression instanceof ArrayAccess) {
 					cardinality = Constants.CARDINALITY_MANY;
-				}
-				else if (expression.resolveTypeBinding() != null) {
-					cardinality =
-						PadlParserUtil.getDim(expression.resolveTypeBinding());
+				} else if (expression.resolveTypeBinding() != null) {
+					cardinality = PadlParserUtil.getDim(expression.resolveTypeBinding());
 				}
 				// targetEntity is the type of the expression on what the
 				// invocation
@@ -1887,83 +1851,65 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 				// method
 
 				// Yann: May be null when parsing Foutse's Eclipse data!
-				// TODO: Understand why it could be something else than a IFirstClassEntity...
-				final IEntity entity =
-					PadlParserUtil.getEntityOrGetOrCreateGhost(
-						false,
-						expression.resolveTypeBinding(),
-						this.padlModel,
-						this.myCurrentPackage.getDisplayID());
+				// TODO: Understand why it could be something else than a
+				// IFirstClassEntity...
+				final IEntity entity = PadlParserUtil.getEntityOrGetOrCreateGhost(false,
+						expression.resolveTypeBinding(), this.padlModel, this.myCurrentPackage.getDisplayID());
 				if (entity instanceof IFirstClassEntity) {
-					final IFirstClassEntity targetEntity =
-						(IFirstClassEntity) entity;
+					final IFirstClassEntity targetEntity = (IFirstClassEntity) entity;
 					// TODO Remove the following comment if it is not useful
-					//	if (targetEntity == null) {
-					//		//This is the case for example of a method m2 defined in a class C defined in a method m1
-					//		//and this method m2 is invoked somewhere else in the method m1 (out of the class)
-					//		//we will not take into account this kind of method invocation  because we don't have 
-					//		// information about this class C and it is not relevant for our purpose
-					//		return false;
-					//	}
+					// if (targetEntity == null) {
+					// //This is the case for example of a method m2 defined in
+					// a class C defined in a method m1
+					// //and this method m2 is invoked somewhere else in the
+					// method m1 (out of the class)
+					// //we will not take into account this kind of method
+					// invocation because we don't have
+					// // information about this class C and it is not relevant
+					// for our purpose
+					// return false;
+					// }
 					IFirstClassEntity fieldDeclaringEntity = null;
-					//if (invocationThroughField ) {
-					//02022012- Aminata S
-					//changed to take into account the fact that for called static method, the field is not required in the byte code
-					if (invocationThroughField
-							&& type != IMethodInvocation.CLASS_CLASS
+					// if (invocationThroughField ) {
+					// 02022012- Aminata S
+					// changed to take into account the fact that for called
+					// static method, the field is not required in the byte code
+					if (invocationThroughField && type != IMethodInvocation.CLASS_CLASS
 							&& type != IMethodInvocation.INSTANCE_CLASS) {
 						// get declaring class if possible
 						// if the type is field, add the class where this
 						// field is declared, take
 						// declaring class and search in padl, if found ok if
 						// not create it as a ghost
-						fieldDeclaringEntity =
-							MethodInvocationUtils.getFieldDeclaringEntity(
-								this.padlModel,
-								expression,
-								this.myCurrentEntity,
-								this.myCurrentPackage.getDisplayID());
+						fieldDeclaringEntity = MethodInvocationUtils.getFieldDeclaringEntity(this.padlModel, expression,
+								this.myCurrentEntity, this.myCurrentPackage.getDisplayID());
 					}
-					methodInvocation =
-						this.padlModel.getFactory().createMethodInvocation(
-							type,
-							cardinality,
-							visibility,
-							targetEntity,
-							fieldDeclaringEntity);
+					methodInvocation = this.padlModel.getFactory().createMethodInvocation(type, cardinality, visibility,
+							targetEntity, fieldDeclaringEntity);
 
-					//if (invocationThroughField ) {
-					//02022012- Aminata S
-					//changed to take into account the fact that for called static method, the field is not required in the byte code
-					if (invocationThroughField
-							&& type != IMethodInvocation.CLASS_CLASS
+					// if (invocationThroughField ) {
+					// 02022012- Aminata S
+					// changed to take into account the fact that for called
+					// static method, the field is not required in the byte code
+					if (invocationThroughField && type != IMethodInvocation.CLASS_CLASS
 							&& type != IMethodInvocation.INSTANCE_CLASS
-							// Yann: May be null when parsing Foutse's Eclipse data!
+							// Yann: May be null when parsing Foutse's Eclipse
+							// data!
 							// TODO: Understand why it could be null...
 							&& fieldDeclaringEntity != null) {
 
-						final IField invocationField =
-							MethodInvocationUtils.getFieldInvocation(
-								this.padlModel,
-								expression,
-								fieldDeclaringEntity);
-						final List<IField> listCallingFields =
-							new ArrayList<IField>();
+						final IField invocationField = MethodInvocationUtils.getFieldInvocation(this.padlModel,
+								expression, fieldDeclaringEntity);
+						final List<IField> listCallingFields = new ArrayList<IField>();
 						listCallingFields.add(invocationField);
 						methodInvocation.setCallingField(listCallingFields);
 					}
 				}
-			}
-			else {
+			} else {
 				// if the expression is null, the target entity is the
 				// current entity
-				methodInvocation =
-					this.padlModel.getFactory().createMethodInvocation(
-						type,
-						cardinality,
-						visibility,
-						this.myCurrentEntity,
-						null);
+				methodInvocation = this.padlModel.getFactory().createMethodInvocation(type, cardinality, visibility,
+						this.myCurrentEntity, null);
 			}
 
 			// Yann: Strange logic.
@@ -1975,10 +1921,7 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 				// exist, search in its superclasses, if not add it into the
 				// last superclasses as add it in the ghost as we did for field
 
-				final IOperation calledMethod =
-					MethodInvocationUtils.getCalledMethod(
-						methodBinding,
-						this.padlModel,
+				final IOperation calledMethod = MethodInvocationUtils.getCalledMethod(methodBinding, this.padlModel,
 						this.myCurrentPackage.getDisplayPath());
 				methodInvocation.setCalledMethod(calledMethod);
 
@@ -1991,9 +1934,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MethodRef
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * MethodRef )
 	 */
 	@Override
 	public boolean visit(final MethodRef node) {
@@ -2014,9 +1956,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.Modifier
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * Modifier )
 	 */
 	@Override
 	public boolean visit(final Modifier node) {
@@ -2026,9 +1967,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * parser.wrapper.ExtendedASTVisitor#visit(parser.wrapper.NamedCompilationUnit
-	 * )
+	 * @see parser.wrapper.ExtendedASTVisitor#visit(parser.wrapper.
+	 * NamedCompilationUnit )
 	 */
 	@Override
 	public boolean visit(final NamedCompilationUnit aNamedCompilationUnit) {
@@ -2076,9 +2016,7 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	 */
 	@Override
 	public boolean visit(final PackageDeclaration node) {
-		this.myCurrentPackage =
-			PadlParserUtil
-				.getPackage(node.getName().toString(), this.padlModel);
+		this.myCurrentPackage = PadlParserUtil.getPackage(node.getName().toString(), this.padlModel);
 
 		return super.visit(node);
 	}
@@ -2174,9 +2112,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SimpleName
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * SimpleName )
 	 */
 	@Override
 	public boolean visit(final SimpleName node) {
@@ -2186,9 +2123,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SimpleType
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * SimpleType )
 	 */
 	@Override
 	public boolean visit(final SimpleType node) {
@@ -2264,9 +2200,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SwitchCase
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * SwitchCase )
 	 */
 	@Override
 	public boolean visit(final SwitchCase node) {
@@ -2300,9 +2235,8 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.TagElement
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * TagElement )
 	 */
 	@Override
 	public boolean visit(final TagElement node) {
@@ -2366,10 +2300,10 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 			// VisitorFirstParsing
 			return false;
 		}
-		//	final boolean b1 =
-		//		node.getParent().getNodeType() != ASTNode.TYPE_DECLARATION;
-		//	final boolean b2 =
-		//		node.getParent().getNodeType() != ASTNode.COMPILATION_UNIT;
+		// final boolean b1 =
+		// node.getParent().getNodeType() != ASTNode.TYPE_DECLARATION;
+		// final boolean b2 =
+		// node.getParent().getNodeType() != ASTNode.COMPILATION_UNIT;
 
 		if (node.getParent().getNodeType() != ASTNode.TYPE_DECLARATION
 				&& node.getParent().getNodeType() != ASTNode.COMPILATION_UNIT) {
@@ -2377,15 +2311,15 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 		}
 
 		this.entityNb++;
-//		if (this.entityNb % 1000 == 0) {
-//			ProxyConsole
-//				.getInstance()
-//				.normalOutput()
-//				.println(
-//					"visited " + this.entityNb + " entities, current entity: "
-//							+ node.resolveBinding().getQualifiedName());
-//
-//		}
+		// if (this.entityNb % 1000 == 0) {
+		// ProxyConsole
+		// .getInstance()
+		// .normalOutput()
+		// .println(
+		// "visited " + this.entityNb + " entities, current entity: "
+		// + node.resolveBinding().getQualifiedName());
+		//
+		// }
 		String qualifiedName = node.resolveBinding().getQualifiedName();
 		final String simpleName = node.getName().toString();
 
@@ -2397,25 +2331,20 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 			}
 
 			if (this.myCurrentPackage == null) {
-				this.myCurrentPackage =
-					(IPackage) this.padlModel
-						.getConstituentFromID(Constants.DEFAULT_PACKAGE_ID);
+				this.myCurrentPackage = (IPackage) this.padlModel.getConstituentFromID(Constants.DEFAULT_PACKAGE_ID);
 			}
 			this.listOfVisitedEntities.add(qualifiedName);
-			this.myCurrentEntity =
-				(IFirstClassEntity) this.myCurrentPackage
+			this.myCurrentEntity = (IFirstClassEntity) this.myCurrentPackage
 					.getConstituentFromID(qualifiedName.toCharArray());
 			if (this.myCurrentEntity == null) {
 				return false;
 			}
 
 			this.listOfVisitedMemberEntities.clear();
-		}
-		else {
+		} else {
 			// class member
 			// id of a class member - replace the . by $
-			qualifiedName =
-				this.myCurrentEntity.getDisplayID() + "$" + simpleName;
+			qualifiedName = this.myCurrentEntity.getDisplayID() + "$" + simpleName;
 
 			if (this.listOfVisitedMemberEntities.contains(qualifiedName)) {
 				// another memberClass with the same id has already been
@@ -2423,8 +2352,7 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 				return false;
 			}
 
-			final IFirstClassEntity memberEntity =
-				(IFirstClassEntity) this.myCurrentEntity
+			final IFirstClassEntity memberEntity = (IFirstClassEntity) this.myCurrentEntity
 					.getConstituentFromID(qualifiedName.toCharArray());
 			this.listOfVisitedMemberEntities.add(qualifiedName);
 			if (memberEntity == null) {// this should not be happened

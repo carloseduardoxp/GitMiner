@@ -28,7 +28,7 @@ public class ExecuteDecorTest {
 	private static List<SmellEnum> smells = Arrays.asList(SmellEnum.values());
 	
 	public static void main(String args[]) throws Exception {
-		IIdiomLevelModel iIdiomLevelModel = analyseCodeLevelModelFromJavaSourceFiles("/home/carloseduardo/workspace/GitMiner/src","execution");
+		IIdiomLevelModel iIdiomLevelModel = analyseCodeLevelModelFromJavaSourceFiles("C:\\Mestrado\\test","execution");
 		getMetrics(iIdiomLevelModel);
 		List<SmellTest> smells = analyseCodeLevelModel(iIdiomLevelModel);
 		System.out.println("Smells");
@@ -106,8 +106,9 @@ public class ExecuteDecorTest {
 			if (entity instanceof IClass) {
 				final IClass aClass = (IClass) entity;
 				System.out.println("Class "+aClass.getDisplayID());
-				for (Metric metric: Metric.values()) {
-					System.out.println("Metric: "+metric+" - "+((IUnaryMetric) MetricsRepository.getInstance().getMetric(metric.toString())).compute(iIdiomLevelModel, aClass));
+				for (Metric metric: Metric.values()) {	
+					System.out.println(metric);
+					System.out.println("Metric: "+metric+" - "+((IUnaryMetric) MetricsRepository.getInstance().getMetric(metric.name())).compute(iIdiomLevelModel, aClass));
 				}
 			}
 		}

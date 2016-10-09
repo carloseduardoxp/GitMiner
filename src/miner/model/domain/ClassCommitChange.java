@@ -72,6 +72,11 @@ public class ClassCommitChange {
 		this.commitChange = commitChange;
 	}
 	
+	public ClassCommitChange(Class javaClass) {
+		super();
+		this.javaClass = javaClass;
+	}
+	
 	public Class getJavaClass() {
 		return javaClass;
 	}

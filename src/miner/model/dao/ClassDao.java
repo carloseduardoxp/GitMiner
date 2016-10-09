@@ -22,10 +22,10 @@ import miner.util.exception.ValidationException;
 
 public class ClassDao {
 
-    public List<Class> getClasses(Branch branch, ICrudDao dao) throws SQLException, ConnectionException {
+    public List<Class> getClasses(Branch branch, ICrudDao dao,boolean report) throws SQLException, ConnectionException {
         Map<Integer, Object> parameters = new HashMap<>();
         parameters.put(1, branch.getId());
-        ResultSet rs = dao.search("classesWithoutChanges", parameters);
+        ResultSet rs = dao.search("classesWithoutChangesReport", parameters);
         List<Class> classes = convertToClass(rs, branch);
         return classes;
     }
@@ -45,9 +45,9 @@ public class ClassDao {
         return classes;
     }
 
-    List<Class> mountClasses(Branch branch, ICrudDao dao) throws ValidationException, SQLException, ConnectionException {
+    List<Class> mountClasses(Branch branch, ICrudDao dao,boolean report) throws ValidationException, SQLException, ConnectionException {
         ClassCommitChangeDao commitChangeDao = DaoFactory.getClassCommitChangeDao();
-        List<Class> classes = getClasses(branch, dao);
+        List<Class> classes = getClasses(branch, dao,report);
         for (Class javaClass : classes) {
             javaClass.setChanges(commitChangeDao.mountClassChanges(javaClass, dao));
         }

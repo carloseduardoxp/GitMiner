@@ -53,13 +53,13 @@ public class BranchDao {
         return branches;
     }
 
-    public List<Branch> mountBranches(Project project,ICrudDao dao) throws ValidationException,SQLException,ConnectionException {
+    public List<Branch> mountBranches(Project project,ICrudDao dao,boolean report) throws ValidationException,SQLException,ConnectionException {
         ClassDao classDao = DaoFactory.getClassDao();
         CommitDao commitDao = DaoFactory.getCommitDao();
         List<Branch> branches = getBranches(project,dao);
         for (Branch branch: branches) {
             branch.setCommits(commitDao.mountCommits(branch,dao));
-            branch.setClasses(classDao.mountClasses(branch,dao));
+            branch.setClasses(classDao.mountClasses(branch,dao,report));
         }
         return branches;
     }

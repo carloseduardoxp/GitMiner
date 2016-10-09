@@ -49,7 +49,7 @@ public class LCOM5 extends AbstractLCOM implements IMetric, IUnaryMetric, IDepen
 			this.classPrimitives.listOfImplementedFields(firstClassEntity);
 
 		if (implementedMethods.size() < 2 || implantedFields.size() == 0) {
-			return 0;
+			return Double.POSITIVE_INFINITY;
 		}
 
 		final List results = new ArrayList();

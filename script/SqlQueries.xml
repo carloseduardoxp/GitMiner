@@ -24,13 +24,29 @@
                 WHERE C.CD_BRANCH = ?                  
                 ORDER BY C.DT_COMMITTER_DATE ASC
                  <!-- AND C.DS_HASH IN (SELECT DS_HASH FROM TB_COMMIT_CHANGE WHERE CD_COMMIT_CHANGE IN (SELECT CD_COMMIT_CHANGE FROM TB_CLASS_COMMIT_CHANGE WHERE LOC IS NULL)) -->  
-            </query>
+            </query>                        
+        </sql>
+        <sql name="commitByHash">
+            <query>
+                SELECT DS_HASH,DS_AUTHOR_NAME,DS_AUTHOR_EMAIL,DT_AUTHOR_DATE,DS_COMMITTER_NAME,DS_COMMITTER_EMAIL,DT_COMMITTER_DATE,
+                DS_FULL_MESSAGE,DS_SHORT_MESSAGE,CD_BRANCH
+                FROM TB_COMMIT C                           
+                WHERE C.DS_HASH = ?                  
+            </query>                                    
         </sql>	   
         <sql name="classesWithoutChanges">
             <query>	
                 SELECT CD_CLASS,NM_CLASS,FL_ANALYSE,FL_INTERFACE,FL_ENUM
                 FROM TB_CLASS
                 WHERE CD_BRANCH = ?  
+            </query>
+        </sql>
+        <sql name="classesWithoutChangesReport">
+            <query>	
+                SELECT CD_CLASS,NM_CLASS,FL_ANALYSE,FL_INTERFACE,FL_ENUM
+                FROM TB_CLASS
+                WHERE CD_BRANCH = ?  
+                AND FL_ANALYSE = 1 AND FL_INTERFACE = 0 AND FL_ENUM = 0
             </query>
         </sql>       
         	 
@@ -40,7 +56,15 @@
                 FROM TB_COMMIT_CHANGE CC
                 WHERE CC.DS_HASH = ?
             </query>
+        </sql>
+        <sql name="changeCommitsById">
+            <query>	
+                SELECT CC.CD_COMMIT_CHANGE,CC.DS_CHANGE_TYPE,NM_OLD_FILENAME,NM_NEW_FILENAME,CC.FL_LOCAL_SOURCE,CC.DS_HASH
+                FROM TB_COMMIT_CHANGE CC
+                WHERE CC.CD_COMMIT_CHANGE = ?
+            </query>
         </sql>	
+        	
         <sql name="classCommitChangeByCommit">
             <query>	
                 SELECT `TB_CLASS_COMMIT_CHANGE`.`CD_COMMIT_CHANGE`,

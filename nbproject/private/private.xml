@@ -2,12 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/carlo/git/GitMiner/src/miner/view/ImportCodeSmellsView.java</file>
-            <file>file:/C:/Users/carlo/git/GitMiner/src/miner/util/GitExtractor.java</file>
-            <file>file:/C:/Users/carlo/git/GitMiner/src/miner/view/InterRelationSmellsView.java</file>
-            <file>file:/C:/Users/carlo/git/GitMiner/src/miner/model/domain/Metric.java</file>
-            <file>file:/C:/Users/carlo/git/GitMiner/src/miner/view/MenuView.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

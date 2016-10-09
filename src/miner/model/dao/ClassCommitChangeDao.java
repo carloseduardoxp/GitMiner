@@ -81,15 +81,74 @@ public class ClassCommitChangeDao {
 	public List<ClassCommitChange> getClassCommitsChange(Class javaClass,ICrudDao dao) throws ValidationException,SQLException,ConnectionException {
         Map<Integer, Object> parameters = new HashMap<>();
         parameters.put(1,javaClass.getId());
-        ResultSet rs = dao.search("classCommitChangeByClass",parameters);
-        List<ClassCommitChange> changes = convertToClassCommitChange(rs,javaClass);
+        ResultSet rs = dao.search("classCommitChangeByClass",parameters);        
+        List<ClassCommitChange> changes = convertToClassCommitChange(rs,javaClass,dao);
         return changes;
     }
 	
-	private List<ClassCommitChange> convertToClassCommitChange(ResultSet rs,Class javaClass) throws ValidationException,SQLException {		
+	private List<ClassCommitChange> convertToClassCommitChange(ResultSet rs,Class javaClass,ICrudDao dao) throws ValidationException,SQLException,ConnectionException {		
         List<ClassCommitChange> changes = new ArrayList<>();
+        CommitChangeDao commitChangeDao = DaoFactory.getCommitChangeDao();
         while (rs.next()) {
-        	ClassCommitChange classCommitChange = new ClassCommitChange(javaClass,new CommitChange(rs.getInt(1)));
+        	Integer commitChangeId = rs.getInt(1);        	
+        	ClassCommitChange classCommitChange = new ClassCommitChange(javaClass);
+        	classCommitChange.setCommitChange(commitChangeDao.getCommitChange(commitChangeId, dao));
+        	classCommitChange.setACAIC(rs.getDouble(3));
+        	classCommitChange.setACMIC(rs.getDouble(4));
+        	classCommitChange.setAID(rs.getDouble(5));
+        	classCommitChange.setANA(rs.getDouble(6));
+        	classCommitChange.setCAM(rs.getDouble(7));
+        	classCommitChange.setCBO(rs.getDouble(8));
+        	classCommitChange.setCIS(rs.getDouble(9));
+        	classCommitChange.setCLD(rs.getDouble(10));
+        	classCommitChange.setCP(rs.getDouble(11));
+        	classCommitChange.setDAM(rs.getDouble(12));
+        	classCommitChange.setDCAEC(rs.getDouble(13));
+        	classCommitChange.setDCC(rs.getDouble(14));
+        	classCommitChange.setDCMEC(rs.getDouble(15));
+        	classCommitChange.setDIT(rs.getDouble(16));
+        	classCommitChange.setDSC(rs.getDouble(17));
+        	classCommitChange.setEIC(rs.getDouble(18));
+        	classCommitChange.setEIP(rs.getDouble(19));
+        	classCommitChange.setICH(rs.getDouble(20));
+        	classCommitChange.setIR(rs.getDouble(21));
+        	classCommitChange.setLCOM1(rs.getDouble(22));
+        	classCommitChange.setLCOM2(rs.getDouble(23));
+        	classCommitChange.setLCOM5(rs.getDouble(24));
+        	classCommitChange.setLOC(rs.getDouble(25));
+        	classCommitChange.setMcCabe(rs.getDouble(26));
+        	classCommitChange.setMFA(rs.getDouble(27));
+        	classCommitChange.setMOA(rs.getDouble(28));
+        	classCommitChange.setNAD(rs.getDouble(29));
+        	classCommitChange.setNCM(rs.getDouble(30));
+        	classCommitChange.setNCP(rs.getDouble(31));
+        	classCommitChange.setNMA(rs.getDouble(32));
+        	classCommitChange.setNMD(rs.getDouble(33));
+        	classCommitChange.setNMI(rs.getDouble(34));
+        	classCommitChange.setNMO(rs.getDouble(35));
+        	classCommitChange.setNOA(rs.getDouble(36));
+        	classCommitChange.setNOC(rs.getDouble(37));
+        	classCommitChange.setNOD(rs.getDouble(38));
+        	classCommitChange.setNOF(rs.getDouble(39));
+        	classCommitChange.setNOH(rs.getDouble(40));
+        	classCommitChange.setNOM(rs.getDouble(41));
+        	classCommitChange.setNOP(rs.getDouble(42));
+        	classCommitChange.setNOPM(rs.getDouble(43));
+        	classCommitChange.setNOTC(rs.getDouble(44));
+        	classCommitChange.setNOTI(rs.getDouble(45));
+        	classCommitChange.setNPrM(rs.getDouble(46));
+        	classCommitChange.setPIIR(rs.getDouble(47));
+        	classCommitChange.setPP(rs.getDouble(48));
+        	classCommitChange.setREIP(rs.getDouble(49));
+        	classCommitChange.setRFC(rs.getDouble(50));
+        	classCommitChange.setRFP(rs.getDouble(51));
+        	classCommitChange.setRPII(rs.getDouble(52));
+        	classCommitChange.setRRFP(rs.getDouble(53));
+        	classCommitChange.setRRTP(rs.getDouble(54));
+        	classCommitChange.setRTP(rs.getDouble(55));
+        	classCommitChange.setSIX(rs.getDouble(56));
+        	classCommitChange.setWMC(rs.getDouble(57));
+        	        				   			   			   			   
             changes.add(classCommitChange);
         }
         return changes;
