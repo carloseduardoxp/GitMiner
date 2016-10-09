@@ -1,10 +1,10 @@
-/miner/
-/ExecuteDecorTest.class
-/ImportClassesTest.class
-/SmellTest.class
 /common/
+/miner/
 /padl/
 /parser/
 /pom/
 /sad/
 /util/
+/ExecuteDecorTest.class
+/ImportClassesTest.class
+/SmellTest.class
