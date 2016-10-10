@@ -15,4 +15,8 @@ import padl.visitor.IWalker;
 public interface IStatementWalker extends IWalker {
 	void visit(final IIfInstruction anIfInstruction);
 	void visit(final ISwitchInstruction aSwitchInstruction);
+	void visit(final IDoInstruction aDoInstruction);
+	void visit(final IForInstruction aForInstruction);
+	void visit(final IWhileInstruction aWhileInstruction);
+	void visit(final IConditionalInstruction aConditionalInstruction);
 }

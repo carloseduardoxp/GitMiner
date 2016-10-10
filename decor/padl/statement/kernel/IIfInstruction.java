@@ -10,5 +10,9 @@
  ******************************************************************************/
 package padl.statement.kernel;
 
+import org.eclipse.jdt.core.dom.Expression;
+
 public interface IIfInstruction extends IConditional {
+	
+	public Expression getExpression();
 }

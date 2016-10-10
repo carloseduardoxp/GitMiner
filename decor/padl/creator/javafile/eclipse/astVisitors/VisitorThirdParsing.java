@@ -48,8 +48,10 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -103,6 +105,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
+
 import padl.creator.javafile.eclipse.util.MethodInvocationUtils;
 import padl.creator.javafile.eclipse.util.PadlParserUtil;
 import padl.kernel.Constants;
@@ -110,6 +113,7 @@ import padl.kernel.ICodeLevelModel;
 import padl.kernel.IEntity;
 import padl.kernel.IField;
 import padl.kernel.IFirstClassEntity;
+import padl.kernel.IGhost;
 import padl.kernel.IMethodInvocation;
 import padl.kernel.IOperation;
 import padl.kernel.IPackage;
@@ -1594,49 +1598,9 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 		if (this.myCurrentOperation == null) {
 			return false;
 		}
-		// *******************************************************************************
-		// Coloquei isso porque no LCOM5 (metrica) ele conta os métodos que
-		// acessam algum campo (atributo) da classe.
-		//
-		// private String A="";
-		// //
-		// public void aaaa(){
-		// //
-		// this.A="dddd";
-		// //
-		// }
-		// Se não colocar ele não conta o metodo aaa() para acessar o atributo A
-		//
-		// Ele estava pegando apenas invocações (ex.: int i=this.A.length();).
-		// Então o LCOM5 (Henderson-Sellers Lack of Cohesion Of Methods) fica
-		// errado.
 		// Elder
-		final ITypeBinding typeBinding = node.resolveTypeBinding();
-		final int cardinality = PadlParserUtil.getDim(typeBinding);
-		final int visibility = this.myCurrentOperation.getVisibility();
-
-		final IFirstClassEntity targetEntity = (IFirstClassEntity) PadlParserUtil.getEntityOrGetOrCreateGhost(false,
-				typeBinding, this.padlModel, this.myCurrentPackage.getDisplayID());
-		// final int type = IMethodInvocation.CLASS_INSTANCE_FROM_FIELD; //Use
-		final int type = IMethodInvocation.INSTANCE_INSTANCE_FROM_FIELD; // Aggregation
-
-		if (!(targetEntity instanceof IPrimitiveEntity)) {
-			IFirstClassEntity fieldDeclaringEntity = null;
-			fieldDeclaringEntity = MethodInvocationUtils.getFieldDeclaringEntity(this.padlModel, node,
-					this.myCurrentEntity, this.myCurrentPackage.getDisplayID());
-			final IMethodInvocation methodInvocation = this.padlModel.getFactory().createMethodInvocation(type,
-					cardinality, visibility, targetEntity, fieldDeclaringEntity);
-
-			methodInvocation.setComment(node.toString());
-
-			final IField invocationField = MethodInvocationUtils.getFieldInvocation(this.padlModel, node,
-					fieldDeclaringEntity);
-			final List<IField> listCallingFields = new ArrayList<IField>();
-			listCallingFields.add(invocationField);
-			methodInvocation.setCallingField(listCallingFields);
-			this.myCurrentOperation.addConstituent(methodInvocation);
-		}
-		// *******************************************************************************
+		// AddAccessField(node); // NÃO VAI PRECIAR POIS NO SimpleName ELE PEGA
+		// TANTO OS FIELDS COM E SEM A PALAVRA "this".
 		// Elder
 		return super.visit(node);
 	}
@@ -2117,7 +2081,69 @@ public class VisitorThirdParsing extends ExtendedASTVisitor {
 	 */
 	@Override
 	public boolean visit(final SimpleName node) {
+		// Elder
+		if (this.myCurrentOperation == null) {
+			return false;
+		}
+		IBinding IB = node.resolveBinding();
+		// ITypeBinding r= node.resolveTypeBinding();
+		if (IB != null && (IB instanceof IVariableBinding)) {
+			IVariableBinding VB = (IVariableBinding) IB;
+			if (VB != null && VB.isField()) {
+				// DC.isMember() - Classe Aninhada (classe entre de classe) não
+				// são consideradas pelo DECOR
+				// Assim, não posso considerar o acesso a estes atributos.
+				ITypeBinding DC = VB.getDeclaringClass();
+				if (DC != null && !DC.isMember()) {
+					/// System.out.println(VB.getName());
+					AddAccessField(node);
+				}
+			}
+		}
+		// Elder
 		return super.visit(node);
+	}
+
+	// Elder
+	// *******************************************************************************
+	private void AddAccessField(Object node) {
+		ITypeBinding typeBinding = null;
+		try {
+			typeBinding = (ITypeBinding) node.getClass().getMethod("resolveTypeBinding").invoke(node);
+		} catch (Exception e) {
+			typeBinding = null;
+		}
+		if (typeBinding == null) {
+			return;
+		}
+		final int cardinality = PadlParserUtil.getDim(typeBinding);
+		final int visibility = this.myCurrentOperation.getVisibility();
+		final IEntity targetEntity = (IEntity) PadlParserUtil.getEntityOrGetOrCreateGhost(false, typeBinding,
+				this.padlModel, this.myCurrentPackage.getDisplayID());
+		final int type = IMethodInvocation.INSTANCE_INSTANCE_FROM_FIELD; // Aggregation
+		IFirstClassEntity fieldDeclaringEntity = null;
+		fieldDeclaringEntity = MethodInvocationUtils.getFieldDeclaringEntity(this.padlModel, ((Expression) node),
+				this.myCurrentEntity, this.myCurrentPackage.getDisplayID());
+		if ((fieldDeclaringEntity == null) || (fieldDeclaringEntity instanceof IGhost)) {
+			return;
+		}
+		IMethodInvocation methodInvocation = null;
+		if (!(targetEntity instanceof IPrimitiveEntity)) {
+			methodInvocation = this.padlModel.getFactory().createMethodInvocation(type, cardinality, visibility,
+					(IFirstClassEntity) targetEntity, fieldDeclaringEntity);
+		} else {
+			// Se tiver acessando um abributo do tipo primitivo, não pode passar
+			// o targetEntity
+			methodInvocation = this.padlModel.getFactory().createMethodInvocation(type, cardinality, visibility, null,
+					fieldDeclaringEntity);
+		}
+		methodInvocation.setComment(node.toString());
+		final IField invocationField = MethodInvocationUtils.getFieldInvocation(this.padlModel, (Expression) node,
+				fieldDeclaringEntity);
+		final List<IField> listCallingFields = new ArrayList<IField>();
+		listCallingFields.add(invocationField);
+		methodInvocation.setCallingField(listCallingFields);
+		this.myCurrentOperation.addConstituent(methodInvocation);
 	}
 
 	/*

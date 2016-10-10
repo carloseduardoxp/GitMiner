@@ -10,15 +10,5 @@
  ******************************************************************************/
 package padl.statement.kernel;
 
-import org.eclipse.jdt.core.dom.Expression;
-
-import padl.kernel.IFactory;
-import padl.kernel.IStatement;
-
-public interface IStatementFactory extends IFactory {
-	IStatement createStatement(final char[] aName);
-	IIfInstruction createIfInstruction(final char[] anExpression,Expression expression);
-	ISwitchInstruction createSwitchInstruction(
-		final char[] anExpression,
-		final int aNumberOfCases);
+public interface IDoInstruction extends IConditional {
 }

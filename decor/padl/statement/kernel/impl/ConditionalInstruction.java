@@ -8,17 +8,26 @@
  * Contributors:
  *     Yann-Gaël Guéhéneuc and others, see in file; API and its implementation
  ******************************************************************************/
-package padl.statement.kernel;
+package padl.statement.kernel.impl;
 
 import org.eclipse.jdt.core.dom.Expression;
 
-import padl.kernel.IFactory;
-import padl.kernel.IStatement;
+import padl.statement.kernel.IConditionalInstruction;
 
-public interface IStatementFactory extends IFactory {
-	IStatement createStatement(final char[] aName);
-	IIfInstruction createIfInstruction(final char[] anExpression,Expression expression);
-	ISwitchInstruction createSwitchInstruction(
-		final char[] anExpression,
-		final int aNumberOfCases);
+class ConditionalInstruction extends Conditional implements IConditionalInstruction {
+	
+	private Expression expression;
+	
+	private static final long serialVersionUID = -4903927228949712456L;
+
+	public ConditionalInstruction(final char[] anExpression,Expression expression) {
+		super(anExpression);
+		this.expression = expression;
+	}
+
+	@Override
+	public Expression getExpression() {
+		return expression;
+	}
+
 }

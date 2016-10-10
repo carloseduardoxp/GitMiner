@@ -3,8 +3,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import miner.model.domain.ClassCommitChange;
-import miner.model.domain.Commit;
 import miner.model.domain.Metric;
 import miner.model.domain.SmellEnum;
 import miner.util.exception.ValidationException;

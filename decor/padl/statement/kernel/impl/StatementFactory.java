@@ -10,13 +10,19 @@
  ******************************************************************************/
 package padl.statement.kernel.impl;
 
+import org.eclipse.jdt.core.dom.Expression;
+
 import padl.kernel.IFactory;
 import padl.kernel.IStatement;
 import padl.kernel.impl.Factory;
 import padl.kernel.impl.Statement;
+import padl.statement.kernel.IConditionalInstruction;
+import padl.statement.kernel.IDoInstruction;
+import padl.statement.kernel.IForInstruction;
 import padl.statement.kernel.IIfInstruction;
 import padl.statement.kernel.IStatementFactory;
 import padl.statement.kernel.ISwitchInstruction;
+import padl.statement.kernel.IWhileInstruction;
 
 /**
  * @author Yousra Tagmouti
@@ -35,9 +41,26 @@ public class StatementFactory extends Factory implements IStatementFactory {
 
 	private StatementFactory() {
 	}
-	public IIfInstruction createIfInstruction(final char[] anExpression) {
-		return new IfInstruction(anExpression);
+	public IConditionalInstruction createConditionalExpressionInstruction(final char[] anExpression,Expression expression) {
+		return new ConditionalInstruction(anExpression,expression);
 	}
+	
+	public IIfInstruction createIfInstruction(final char[] anExpression,Expression expression) {
+		return new IfInstruction(anExpression,expression);
+	}
+	
+	public IForInstruction createForInstruction(final char[] anExpression) {
+		return new ForInstruction(anExpression);
+	}
+	
+	public IWhileInstruction createWhileInstruction(final char[] anExpression) {
+		return new WhileInstruction(anExpression);
+	}
+
+	public IDoInstruction createDoInstruction(final char[] anExpression) {
+		return new DoInstruction(anExpression);
+	}
+
 	public IStatement createStatement(final char[] aName) {
 		return new Statement(aName);
 	}

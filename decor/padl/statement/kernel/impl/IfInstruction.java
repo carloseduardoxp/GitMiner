@@ -10,12 +10,24 @@
  ******************************************************************************/
 package padl.statement.kernel.impl;
 
+import org.eclipse.jdt.core.dom.Expression;
+
 import padl.statement.kernel.IIfInstruction;
 
 class IfInstruction extends Conditional implements IIfInstruction {
+	
+	private Expression expression;
+	
 	private static final long serialVersionUID = -4903927228949712456L;
 
-	public IfInstruction(final char[] anExpression) {
+	public IfInstruction(final char[] anExpression,Expression expression) {
 		super(anExpression);
+		this.expression = expression;
 	}
+
+	@Override
+	public Expression getExpression() {
+		return expression;
+	}
+
 }

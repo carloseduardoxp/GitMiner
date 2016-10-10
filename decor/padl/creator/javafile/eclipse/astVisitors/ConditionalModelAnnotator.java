@@ -13,6 +13,7 @@ package padl.creator.javafile.eclipse.astVisitors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
@@ -97,6 +98,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
+
 import padl.creator.javafile.eclipse.util.PadlParserUtil;
 import padl.kernel.Constants;
 import padl.kernel.ICodeLevelModel;
@@ -125,18 +127,14 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	private final List<String> listOfVisitedMemberEntities;
 
 	// Stack for managing member entities
-	private final Stack<IFirstClassEntity> entitiesStack =
-		new Stack<IFirstClassEntity>();
+	private final Stack<IFirstClassEntity> entitiesStack = new Stack<IFirstClassEntity>();
 
 	public ConditionalModelAnnotator(final ICodeLevelModel aCodeLevelModel) {
 		this.listOfVisitedEntities = new ArrayList<String>();
 		this.listOfVisitedMemberEntities = new ArrayList<String>();
 		this.padlModel = aCodeLevelModel;
 
-		ProxyConsole
-			.getInstance()
-			.debugOutput()
-			.println("Beginning of conditional annotating...");
+		ProxyConsole.getInstance().debugOutput().println("Beginning of conditional annotating...");
 	}
 
 	/*
@@ -645,8 +643,7 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 		// visitable classes because we put conditions to visit only those
 		// classes
 		// may be not sufficient ... see in the typedec end
-		if (node.getParent().getNodeType() == ASTNode.TYPE_DECLARATION
-				&& this.myCurrentEntity != null
+		if (node.getParent().getNodeType() == ASTNode.TYPE_DECLARATION && this.myCurrentEntity != null
 				&& this.myCurrentOperation != null) {
 			// reinitialize variables
 			this.myCurrentOperation = null;
@@ -1060,13 +1057,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	@Override
 	public void endVisit(final TypeDeclaration node) {
 		if (this.myCurrentEntity != null && node.resolveBinding() != null) {
-			final String nodeId =
-				PadlParserUtil.renameWith$(node
-					.resolveBinding()
-					.getQualifiedName(), node
-					.resolveBinding()
-					.getPackage()
-					.getName());
+			final String nodeId = PadlParserUtil.renameWith$(node.resolveBinding().getQualifiedName(),
+					node.resolveBinding().getPackage().getName());
 			// check if it is really the end of the current entity
 
 			if (this.myCurrentEntity.getDisplayID().equals(nodeId)) {
@@ -1078,8 +1070,7 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 
 					this.myCurrentEntity = this.entitiesStack.pop();
 
-				}
-				else {
+				} else {
 					// For the case where there is one public class and many
 					// others classes in the same file but those classes are not
 					// members of the first
@@ -1310,9 +1301,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.ArrayType
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * ArrayType )
 	 */
 	@Override
 	public boolean visit(final ArrayType node) {
@@ -1333,9 +1323,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.Assignment
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * Assignment )
 	 */
 	@Override
 	public boolean visit(final Assignment node) {
@@ -1456,6 +1445,10 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	 */
 	@Override
 	public boolean visit(final ConditionalExpression node) {
+		if (this.myCurrentOperation != null) {
+			this.myCurrentOperation.addConstituent(((StatementFactory) StatementFactory.getInstance())
+					.createConditionalExpressionInstruction(node.toString().toCharArray(), node.getExpression()));
+		}
 		return super.visit(node);
 	}
 
@@ -1489,7 +1482,12 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	 */
 	@Override
 	public boolean visit(final DoStatement node) {
+		if (this.myCurrentOperation != null) {
+			this.myCurrentOperation.addConstituent(((StatementFactory) StatementFactory.getInstance())
+					.createDoInstruction(node.toString().toCharArray()));
+		}
 		return super.visit(node);
+
 	}
 
 	/*
@@ -1577,6 +1575,10 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	 */
 	@Override
 	public boolean visit(final ForStatement node) {
+		if (this.myCurrentOperation != null) {
+			this.myCurrentOperation.addConstituent(((StatementFactory) StatementFactory.getInstance())
+					.createForInstruction(node.toString().toCharArray()));
+		}
 		return super.visit(node);
 	}
 
@@ -1589,11 +1591,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	@Override
 	public boolean visit(final IfStatement node) {
 		if (this.myCurrentOperation != null) {
-			this.myCurrentOperation
-				.addConstituent(((StatementFactory) StatementFactory
-					.getInstance()).createIfInstruction(node
-					.toString()
-					.toCharArray()));
+			this.myCurrentOperation.addConstituent(((StatementFactory) StatementFactory.getInstance())
+					.createIfInstruction(node.toString().toCharArray(), node.getExpression()));
 		}
 		return super.visit(node);
 	}
@@ -1645,9 +1644,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.Javadoc
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * Javadoc )
 	 */
 	@Override
 	public boolean visit(final Javadoc node) {
@@ -1690,9 +1688,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MemberRef
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * MemberRef )
 	 */
 	@Override
 	public boolean visit(final MemberRef node) {
@@ -1718,20 +1715,14 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	 */
 	@Override
 	public boolean visit(final MethodDeclaration node) {
-		if (node.getParent().getNodeType() == ASTNode.TYPE_DECLARATION
-				&& this.myCurrentEntity != null) {
+		if (node.getParent().getNodeType() == ASTNode.TYPE_DECLARATION && this.myCurrentEntity != null) {
 
-			final char[] operationID =
-				PadlParserUtil.computeMethodNodeSignature(
-					node,
-					this.padlModel,
+			final char[] operationID = PadlParserUtil.computeMethodNodeSignature(node, this.padlModel,
 					this.myCurrentPackage);
-			this.myCurrentOperation =
-				(IOperation) this.myCurrentEntity
-					.getConstituentFromID(operationID);
-		}/*
-			* else{//seems useless... let see return false; }
-			*/
+			this.myCurrentOperation = (IOperation) this.myCurrentEntity.getConstituentFromID(operationID);
+		} /*
+			 * else{//seems useless... let see return false; }
+			 */
 		return super.visit(node);
 	}
 
@@ -1749,9 +1740,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.MethodRef
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * MethodRef )
 	 */
 	@Override
 	public boolean visit(final MethodRef node) {
@@ -1772,9 +1762,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.Modifier
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * Modifier )
 	 */
 	@Override
 	public boolean visit(final Modifier node) {
@@ -1784,9 +1773,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * parser.wrapper.ExtendedASTVisitor#visit(parser.wrapper.NamedCompilationUnit
-	 * )
+	 * @see parser.wrapper.ExtendedASTVisitor#visit(parser.wrapper.
+	 * NamedCompilationUnit )
 	 */
 	@Override
 	public boolean visit(final NamedCompilationUnit aNamedCompilationUnit) {
@@ -1834,9 +1822,7 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	 */
 	@Override
 	public boolean visit(final PackageDeclaration node) {
-		this.myCurrentPackage =
-			PadlParserUtil
-				.getPackage(node.getName().toString(), this.padlModel);
+		this.myCurrentPackage = PadlParserUtil.getPackage(node.getName().toString(), this.padlModel);
 
 		return super.visit(node);
 	}
@@ -1932,9 +1918,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SimpleName
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * SimpleName )
 	 */
 	@Override
 	public boolean visit(final SimpleName node) {
@@ -1944,9 +1929,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SimpleType
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * SimpleType )
 	 */
 	@Override
 	public boolean visit(final SimpleType node) {
@@ -2022,9 +2006,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.SwitchCase
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * SwitchCase )
 	 */
 	@Override
 	public boolean visit(final SwitchCase node) {
@@ -2041,13 +2024,20 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	@Override
 	public boolean visit(final SwitchStatement node) {
 		if (this.myCurrentOperation != null) {
-			this.myCurrentOperation
-				.addConstituent(((StatementFactory) StatementFactory
-					.getInstance()).createSwitchInstruction(node
-					.toString()
-					.toCharArray(), node.getLength()));
+			this.myCurrentOperation.addConstituent(((StatementFactory) StatementFactory.getInstance())
+					.createSwitchInstruction(node.toString().toCharArray(), getComplexity(node.statements())));
 		}
 		return super.visit(node);
+	}
+
+	private int getComplexity(List statements) {
+		int count = 1;
+		for (int i = 0; i < statements.size(); i++) {
+			if (statements.get(i) instanceof SwitchCase) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	/*
@@ -2064,9 +2054,8 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.TagElement
-	 * )
+	 * @see org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom.
+	 * TagElement )
 	 */
 	@Override
 	public boolean visit(final TagElement node) {
@@ -2136,14 +2125,14 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 		}
 
 		this.entityNb++;
-//		if (this.entityNb % 1000 == 0) {
-//			ProxyConsole
-//				.getInstance()
-//				.normalOutput()
-//				.println(
-//					"visited " + this.entityNb + " entities, current entity: "
-//							+ node.resolveBinding().getQualifiedName());
-//		}
+		// if (this.entityNb % 1000 == 0) {
+		// ProxyConsole
+		// .getInstance()
+		// .normalOutput()
+		// .println(
+		// "visited " + this.entityNb + " entities, current entity: "
+		// + node.resolveBinding().getQualifiedName());
+		// }
 		String qualifiedName = node.resolveBinding().getQualifiedName();
 		final String simpleName = node.getName().toString();
 
@@ -2155,25 +2144,20 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 			}
 
 			if (this.myCurrentPackage == null) {
-				this.myCurrentPackage =
-					(IPackage) this.padlModel
-						.getConstituentFromID(Constants.DEFAULT_PACKAGE_ID);
+				this.myCurrentPackage = (IPackage) this.padlModel.getConstituentFromID(Constants.DEFAULT_PACKAGE_ID);
 			}
 			this.listOfVisitedEntities.add(qualifiedName);
-			this.myCurrentEntity =
-				(IFirstClassEntity) this.myCurrentPackage
+			this.myCurrentEntity = (IFirstClassEntity) this.myCurrentPackage
 					.getConstituentFromID(qualifiedName.toCharArray());
 			if (this.myCurrentEntity == null) {
 				return false;
 			}
 
 			this.listOfVisitedMemberEntities.clear();
-		}
-		else {
+		} else {
 			// class member
 			// id of a class member - replace the . by $
-			qualifiedName =
-				this.myCurrentEntity.getDisplayID() + "$" + simpleName;
+			qualifiedName = this.myCurrentEntity.getDisplayID() + "$" + simpleName;
 
 			if (this.listOfVisitedMemberEntities.contains(qualifiedName)) {
 				// another memberClass with the same id has already been
@@ -2181,8 +2165,7 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 				return false;
 			}
 
-			final IFirstClassEntity memberEntity =
-				(IFirstClassEntity) this.myCurrentEntity
+			final IFirstClassEntity memberEntity = (IFirstClassEntity) this.myCurrentEntity
 					.getConstituentFromID(qualifiedName.toCharArray());
 			this.listOfVisitedMemberEntities.add(qualifiedName);
 			if (memberEntity == null) {// this should not be happened
@@ -2192,8 +2175,7 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 			this.entitiesStack.addElement(this.myCurrentEntity);
 			this.myCurrentEntity = memberEntity;
 
-			if (this.myCurrentEntity instanceof IInterface
-					|| this.myCurrentEntity instanceof IMemberInterface) {
+			if (this.myCurrentEntity instanceof IInterface || this.myCurrentEntity instanceof IMemberInterface) {
 				return false;
 			}
 		}
@@ -2275,6 +2257,10 @@ public class ConditionalModelAnnotator extends ExtendedASTVisitor {
 	 */
 	@Override
 	public boolean visit(final WhileStatement node) {
+		if (this.myCurrentOperation != null) {
+			this.myCurrentOperation.addConstituent(((StatementFactory) StatementFactory.getInstance())
+					.createWhileInstruction(node.toString().toCharArray()));
+		}
 		return super.visit(node);
 	}
 

@@ -45,6 +45,8 @@ public class LCOM5 extends AbstractLCOM implements IMetric, IUnaryMetric, IDepen
 		final Collection implementedMethods =
 			this.classPrimitives
 				.listOfOverriddenAndConcreteMethods(firstClassEntity);
+		implementedMethods.addAll(this.classPrimitives.listOfAllConstructors(firstClassEntity));
+		//final Collection implementedConstructors = this.classPrimitives.get
 		final List implantedFields =
 			this.classPrimitives.listOfImplementedFields(firstClassEntity);
 

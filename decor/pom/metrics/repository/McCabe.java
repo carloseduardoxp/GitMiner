@@ -10,13 +10,21 @@
  ******************************************************************************/
 package pom.metrics.repository;
 
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.SimpleName;
+
 import padl.kernel.IAbstractModel;
 import padl.kernel.IConstituent;
 import padl.kernel.IFirstClassEntity;
 import padl.kernel.IPrimitiveEntity;
+import padl.statement.kernel.IConditionalInstruction;
+import padl.statement.kernel.IDoInstruction;
+import padl.statement.kernel.IForInstruction;
 import padl.statement.kernel.IIfInstruction;
 import padl.statement.kernel.IStatementWalker;
 import padl.statement.kernel.ISwitchInstruction;
+import padl.statement.kernel.IWhileInstruction;
 import padl.statement.kernel.impl.StatementWalkerAdapter;
 import pom.metrics.IDependencyIndependentMetric;
 import pom.metrics.IMetric;
@@ -56,7 +64,54 @@ public class McCabe extends AbstractMetric implements IMetric, IUnaryMetric, IDe
 			ProxyConsole.getInstance().debugOutput().println(')');
 		}
 
+		@Override
 		public void visit(final IIfInstruction anIfInstruction) {
+			Expression expression = anIfInstruction.getExpression();
+			if (expression instanceof InfixExpression) {
+				this.mcCabe+= getExpressionValue((InfixExpression)expression);	
+			}									
+			this.mcCabe++;
+		}
+		
+		@Override
+		public void visit(final IConditionalInstruction anConditionalInstruction) {
+			Expression expression = anConditionalInstruction.getExpression();
+			if (expression instanceof InfixExpression) {
+				this.mcCabe+= getExpressionValue((InfixExpression)expression);	
+			}									
+			this.mcCabe++;
+		}
+
+		private int getExpressionValue(InfixExpression expression) {
+			int qtd = 0;
+			boolean expressions = false;
+			Expression leftExpression = expression.getLeftOperand();
+			Expression rightExpression = expression.getRightOperand();
+			if (leftExpression instanceof InfixExpression) {
+				qtd += getExpressionValue((InfixExpression)leftExpression);
+				expressions = true;
+			}
+			if (rightExpression instanceof InfixExpression) {
+				qtd += getExpressionValue((InfixExpression)leftExpression);
+				expressions = true;
+			}
+			if (expressions) {
+				qtd++;	
+			}			
+			return qtd;
+		}
+		@Override
+		public void visit(final IForInstruction anForInstruction) {
+			this.mcCabe++;
+		}
+		
+		@Override
+		public void visit(final IWhileInstruction anWhileInstruction) {
+			this.mcCabe++;
+		}
+		
+		@Override
+		public void visit(final IDoInstruction anDoInstruction) {
 			this.mcCabe++;
 		}
 
