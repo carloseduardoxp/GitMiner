@@ -13,6 +13,8 @@ package pom.metrics.repository;
 import java.util.Iterator;
 import padl.kernel.IAbstractModel;
 import padl.kernel.IClass;
+import padl.kernel.IConstructor;
+import padl.kernel.IField;
 import padl.kernel.IFirstClassEntity;
 import padl.kernel.IMethod;
 import pom.metrics.IMetric;
@@ -28,11 +30,19 @@ public class LOC extends AbstractMetric implements IMetric, IUnaryMetric {
 		int loc = 0;
 
 		if (anEntity instanceof IClass) {
-			final IClass clazz = (IClass) anEntity;			
+			final IClass clazz = (IClass) anEntity;
+			final Iterator iteratorOnFields = 
+					clazz.getIteratorOnConstituents(IField.class);
+			while (iteratorOnFields.hasNext()) {
+				final IField field = (IField) iteratorOnFields.next();
+				loc++;
+			}
+			
 			final Iterator iteratorOnMethods =
-				clazz.getIteratorOnConstituents(IMethod.class);
+				clazz.getIteratorOnConstituents(IConstructor.class);
+
 			while (iteratorOnMethods.hasNext()) {
-				final IMethod method = (IMethod) iteratorOnMethods.next();
+				final IConstructor method = (IConstructor) iteratorOnMethods.next();
 				
 				if (!method.isAbstract()
 						&& (method.getVisibility() & Modifier.NATIVE) == 0) {

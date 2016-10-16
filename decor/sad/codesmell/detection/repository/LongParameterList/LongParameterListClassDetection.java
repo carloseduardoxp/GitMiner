@@ -40,11 +40,8 @@ import util.io.ProxyConsole;
  *
  */
 
-
 public class LongParameterListClassDetection extends AbstractCodeSmellDetection implements ICodeSmellDetection {
 
-	
-	
 	public String getName() {
 		return "LongParameterListClassDetection";
 	}
@@ -62,11 +59,14 @@ public class LongParameterListClassDetection extends AbstractCodeSmellDetection 
 				final IClass aClass = (IClass) entity;
 				thereIsLongParameterListClass = true;
 
-				
-	final double NOParam = ((IUnaryMetric) MetricsRepository.getInstance().getMetric("NOParam")).compute(anAbstractLevelModel, aClass);
-	mapOfLongParameterListClassValues.put(aClass, new Double[] {new Double(NOParam), new Double(0)});
-				//final double NOParam = ((IUnaryMetric) MetricsRepository.getInstance().getMetric("NOParam")).compute(anAbstractLevelModel, aClass);
-				//mapOfLongParameterListClassValues.put(aClass, new Double(NOParam));
+				final double NOParam = ((IUnaryMetric) MetricsRepository.getInstance().getMetric("NOParam"))
+						.compute(anAbstractLevelModel, aClass);
+				mapOfLongParameterListClassValues.put(aClass, new Double[] { new Double(NOParam), new Double(0) });
+				// final double NOParam = ((IUnaryMetric)
+				// MetricsRepository.getInstance().getMetric("NOParam")).compute(anAbstractLevelModel,
+				// aClass);
+				// mapOfLongParameterListClassValues.put(aClass, new
+				// Double(NOParam));
 			}
 		}
 
@@ -76,25 +76,23 @@ public class LongParameterListClassDetection extends AbstractCodeSmellDetection 
 			setBoxPlot(boxPlot);
 
 			final Map mapOfLongParameterListClassClassesFromBoxPlot = boxPlot.getHighOutliers();
-			final Iterator iter3 = mapOfLongParameterListClassClassesFromBoxPlot
-				.keySet()
-				.iterator();
+			final Iterator iter3 = mapOfLongParameterListClassClassesFromBoxPlot.keySet().iterator();
 
 			while (iter3.hasNext()) {
 				final IClass aLongParameterListClassClass = (IClass) iter3.next();
 				try {
 					ClassProperty classProp = new ClassProperty(aLongParameterListClassClass);
-					
-					
-	final double NOParam = ((IUnaryMetric) MetricsRepository.getInstance().getMetric("NOParam")).compute(anAbstractLevelModel, aLongParameterListClassClass);
 
-HashMap thresholdMap = new HashMap();
-thresholdMap.put("NOParam_MaxBound", new Double(boxPlot.getMaxBound()));
-					final Double fuzziness = ((Double[])mapOfLongParameterListClassClassesFromBoxPlot.get(aLongParameterListClassClass))[1];
-					classProp.addProperty(new MetricProperty("NOParam", 
-						NOParam, 
-						thresholdMap, fuzziness.doubleValue()));
-					
+					final double NOParam = ((IUnaryMetric) MetricsRepository.getInstance().getMetric("NOParam"))
+							.compute(anAbstractLevelModel, aLongParameterListClassClass);
+
+					HashMap thresholdMap = new HashMap();
+					thresholdMap.put("NOParam_MaxBound", new Double(boxPlot.getMaxBound()));
+					final Double fuzziness = ((Double[]) mapOfLongParameterListClassClassesFromBoxPlot
+							.get(aLongParameterListClassClass))[1];
+					classProp
+							.addProperty(new MetricProperty("NOParam", NOParam, thresholdMap, fuzziness.doubleValue()));
+
 					LongParameterListClassClassesFound.add(new CodeSmell("LongParameterListClass", "", classProp));
 				} catch (final Exception e) {
 					// TODO Auto-generated catch block
@@ -106,6 +104,5 @@ thresholdMap.put("NOParam_MaxBound", new Double(boxPlot.getMaxBound()));
 		this.setSetOfSmells(LongParameterListClassClassesFound);
 
 	}
-	
-	
+
 }

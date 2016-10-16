@@ -1621,7 +1621,7 @@ public class LOCModelAnnotator extends ExtendedASTVisitor {
 	 */
 	@Override
 	public boolean visit(final DoStatement node) {
-		this.nbStatements++;
+		this.nbStatements+=2;
 		return super.visit(node);
 	}
 
@@ -1636,7 +1636,7 @@ public class LOCModelAnnotator extends ExtendedASTVisitor {
 		this.nbStatements++;
 		return super.visit(node);
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -2196,7 +2196,7 @@ public class LOCModelAnnotator extends ExtendedASTVisitor {
 	 */
 	@Override
 	public boolean visit(final SwitchCase node) {
-
+		
 		return super.visit(node);
 	}
 
