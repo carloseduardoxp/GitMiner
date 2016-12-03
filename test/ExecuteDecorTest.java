@@ -26,7 +26,7 @@ public class ExecuteDecorTest {
 	private static List<SmellEnum> smells = Arrays.asList(SmellEnum.values());
 	
 	public static void main(String args[]) throws Exception {
-		IIdiomLevelModel iIdiomLevelModel = analyseCodeLevelModelFromJavaSourceFiles("C:\\Mestrado\\test","execution");
+		IIdiomLevelModel iIdiomLevelModel = analyseCodeLevelModelFromJavaSourceFiles("C:\\Users\\carlo\\workspace\\DesignPatterns\\src\\composite\\util","execution");
 		getMetrics(iIdiomLevelModel);
 		List<SmellTest> smells = analyseCodeLevelModel(iIdiomLevelModel);
 		System.out.println("Smells");

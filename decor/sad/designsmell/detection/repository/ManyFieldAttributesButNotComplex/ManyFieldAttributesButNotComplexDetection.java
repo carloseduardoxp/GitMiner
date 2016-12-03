@@ -22,7 +22,8 @@ import sad.kernel.impl.DesignSmell;
 import sad.util.OperatorsCodeSmells;
 import sad.util.Relationships;
 
-public class ManyFieldAttributesButNotComplexDetection extends AbstractDesignSmellDetection implements IDesignSmellDetection {
+public class ManyFieldAttributesButNotComplexDetection extends AbstractDesignSmellDetection
+		implements IDesignSmellDetection {
 	private final OperatorsCodeSmells operators;
 	private final Relationships relations;
 
@@ -32,7 +33,7 @@ public class ManyFieldAttributesButNotComplexDetection extends AbstractDesignSme
 		this.operators = OperatorsCodeSmells.getInstance();
 		this.relations = Relationships.getInstance();
 	}
-	
+
 	public String getName() {
 		return "ManyFieldAttributesButNotComplex";
 	}
@@ -41,37 +42,35 @@ public class ManyFieldAttributesButNotComplexDetection extends AbstractDesignSme
 		return "../SAD Rules Creator/rsc/ManyFieldAttributesButNotComplex.rules";
 	}
 
-	
-public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-final Set candidateDesignSmells = new HashSet();
+	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
+		final Set candidateDesignSmells = new HashSet();
 
-final ICodeSmellDetection csNotComplex = new NotComplexDetection();
-csNotComplex.detect(anAbstractLevelModel);
-final Set setNotComplex = ((NotComplexDetection) csNotComplex).getCodeSmells();
+		final ICodeSmellDetection csNotComplex = new NotComplexDetection();
+		csNotComplex.detect(anAbstractLevelModel);
+		final Set setNotComplex = ((NotComplexDetection) csNotComplex).getCodeSmells();
 
-final ICodeSmellDetection csFieldPublic = new FieldPublicDetection();
-csFieldPublic.detect(anAbstractLevelModel);
-final Set setFieldPublic = ((FieldPublicDetection) csFieldPublic).getCodeSmells();
+		final ICodeSmellDetection csFieldPublic = new FieldPublicDetection();
+		csFieldPublic.detect(anAbstractLevelModel);
+		final Set setFieldPublic = ((FieldPublicDetection) csFieldPublic).getCodeSmells();
 
-final ICodeSmellDetection csManyAttributes = new ManyAttributesDetection();
-csManyAttributes.detect(anAbstractLevelModel);
-final Set setManyAttributes = ((ManyAttributesDetection) csManyAttributes).getCodeSmells();
+		final ICodeSmellDetection csManyAttributes = new ManyAttributesDetection();
+		csManyAttributes.detect(anAbstractLevelModel);
+		final Set setManyAttributes = ((ManyAttributesDetection) csManyAttributes).getCodeSmells();
 
-final Set setManyFieldAttributes = 
-this.operators.intersection(setManyAttributes,setFieldPublic);
+		final Set setManyFieldAttributes = this.operators.intersection(setManyAttributes, setFieldPublic);
 
-final Set setManyFieldAttributesButNotComplex = 
-this.operators.intersection(setManyFieldAttributes,setNotComplex);
+		final Set setManyFieldAttributesButNotComplex = this.operators.intersection(setManyFieldAttributes,
+				setNotComplex);
 
-final Iterator iterSet = setManyFieldAttributesButNotComplex.iterator();
-while(iterSet.hasNext()) {
-final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
-final DesignSmell designSmell = new DesignSmell(aCodeSmell);
-designSmell.setName("ManyFieldAttributesButNotComplex");
-final String definition = "To defined";
-designSmell.setDefinition(definition);
-candidateDesignSmells.add(designSmell);
-}
-this.setSetOfDesignSmells(candidateDesignSmells);
-}
+		final Iterator iterSet = setManyFieldAttributesButNotComplex.iterator();
+		while (iterSet.hasNext()) {
+			final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
+			final DesignSmell designSmell = new DesignSmell(aCodeSmell);
+			designSmell.setName("ManyFieldAttributesButNotComplex");
+			final String definition = "To defined";
+			designSmell.setDefinition(definition);
+			candidateDesignSmells.add(designSmell);
+		}
+		this.setSetOfDesignSmells(candidateDesignSmells);
+	}
 }

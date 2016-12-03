@@ -32,7 +32,7 @@ public class FunctionalDecompositionDetection extends AbstractDesignSmellDetecti
 		this.operators = OperatorsCodeSmells.getInstance();
 		this.relations = Relationships.getInstance();
 	}
-	
+
 	public String getName() {
 		return "FunctionalDecomposition";
 	}
@@ -41,50 +41,46 @@ public class FunctionalDecompositionDetection extends AbstractDesignSmellDetecti
 		return "../SAD Rules Creator/rsc/FunctionalDecomposition.rules";
 	}
 
-	
-public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-final Set candidateDesignSmells = new HashSet();
+	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
+		final Set candidateDesignSmells = new HashSet();
 
-final ICodeSmellDetection csFieldPrivate = new FieldPrivateDetection();
-csFieldPrivate.detect(anAbstractLevelModel);
-final Set setFieldPrivate = ((FieldPrivateDetection) csFieldPrivate).getCodeSmells();
+		final ICodeSmellDetection csFieldPrivate = new FieldPrivateDetection();
+		csFieldPrivate.detect(anAbstractLevelModel);
+		final Set setFieldPrivate = ((FieldPrivateDetection) csFieldPrivate).getCodeSmells();
 
-final ICodeSmellDetection csClassOneMethod = new ClassOneMethodDetection();
-csClassOneMethod.detect(anAbstractLevelModel);
-final Set setClassOneMethod = ((ClassOneMethodDetection) csClassOneMethod).getCodeSmells();
+		final ICodeSmellDetection csClassOneMethod = new ClassOneMethodDetection();
+		csClassOneMethod.detect(anAbstractLevelModel);
+		final Set setClassOneMethod = ((ClassOneMethodDetection) csClassOneMethod).getCodeSmells();
 
-final Set setaClass = 
-this.operators.intersection(setClassOneMethod,setFieldPrivate);
+		final Set setaClass = this.operators.intersection(setClassOneMethod, setFieldPrivate);
 
-final ICodeSmellDetection csFunctionClass = new FunctionClassDetection();
-csFunctionClass.detect(anAbstractLevelModel);
-final Set setFunctionClass = ((FunctionClassDetection) csFunctionClass).getCodeSmells();
+		final ICodeSmellDetection csFunctionClass = new FunctionClassDetection();
+		csFunctionClass.detect(anAbstractLevelModel);
+		final Set setFunctionClass = ((FunctionClassDetection) csFunctionClass).getCodeSmells();
 
-final ICodeSmellDetection csNoPolymorphism = new NoPolymorphismDetection();
-csNoPolymorphism.detect(anAbstractLevelModel);
-final Set setNoPolymorphism = ((NoPolymorphismDetection) csNoPolymorphism).getCodeSmells();
+		final ICodeSmellDetection csNoPolymorphism = new NoPolymorphismDetection();
+		csNoPolymorphism.detect(anAbstractLevelModel);
+		final Set setNoPolymorphism = ((NoPolymorphismDetection) csNoPolymorphism).getCodeSmells();
 
-final ICodeSmellDetection csNoInheritance = new NoInheritanceDetection();
-csNoInheritance.detect(anAbstractLevelModel);
-final Set setNoInheritance = ((NoInheritanceDetection) csNoInheritance).getCodeSmells();
+		final ICodeSmellDetection csNoInheritance = new NoInheritanceDetection();
+		csNoInheritance.detect(anAbstractLevelModel);
+		final Set setNoInheritance = ((NoInheritanceDetection) csNoInheritance).getCodeSmells();
 
-final Set setNoInheritPoly = 
-this.operators.intersection(setNoInheritance,setNoPolymorphism);
+		final Set setNoInheritPoly = this.operators.intersection(setNoInheritance, setNoPolymorphism);
 
-final Set setmainClass = 
-this.operators.union(setNoInheritPoly,setFunctionClass);
+		final Set setmainClass = this.operators.union(setNoInheritPoly, setFunctionClass);
 
-final Set setFunctionalDecomposition = this.relations.checkAssociationOneToMany(1, setmainClass,  setaClass);
+		final Set setFunctionalDecomposition = this.relations.checkAssociationOneToMany(1, setmainClass, setaClass);
 
-final Iterator iterSet = setFunctionalDecomposition.iterator();
-while(iterSet.hasNext()) {
-final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
-final DesignSmell designSmell = new DesignSmell(aCodeSmell);
-designSmell.setName("FunctionalDecomposition");
-final String definition = "To defined";
-designSmell.setDefinition(definition);
-candidateDesignSmells.add(designSmell);
-}
-this.setSetOfDesignSmells(candidateDesignSmells);
-}
+		final Iterator iterSet = setFunctionalDecomposition.iterator();
+		while (iterSet.hasNext()) {
+			final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
+			final DesignSmell designSmell = new DesignSmell(aCodeSmell);
+			designSmell.setName("FunctionalDecomposition");
+			final String definition = "To defined";
+			designSmell.setDefinition(definition);
+			candidateDesignSmells.add(designSmell);
+		}
+		this.setSetOfDesignSmells(candidateDesignSmells);
+	}
 }

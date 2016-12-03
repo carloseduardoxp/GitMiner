@@ -156,7 +156,7 @@ public class ClassSmellMetricsVersionService {
 
 	private void analyseClass(Class javaClass, int column) throws RowsExceededException, WriteException {
 		int row = 0;
-		WritableCell cell = new Label(column, row, javaClass.getName());
+		WritableCell cell = new Label(column, row, javaClass.getName()+" - "+javaClass.getId());
 		writableSheetClass.addCell(cell);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
 		Log.writeLog("Analysing class " + javaClass.getName());		
@@ -173,7 +173,7 @@ public class ClassSmellMetricsVersionService {
 			String smells = getSmells(ccc);
 			analyseSmells(row==0?true:false,ccc.getSmells(),cc.getChangeType() == ChangeType.DELETE?true:false);
 			row++;
-			cell = new Label(column, row, date + " - " + hash + " - " + operation + " - " + cc.getId() + " - LOC " + loc + " CBO " + cbo
+			cell = new Label(column, row,ccc.getCommitChange().getId()+" - "+ date + " - " + hash + " - " + operation + " - " + cc.getId() + " - LOC " + loc + " CBO " + cbo
 					+ " RFC " + rfc + " " + smells);
 			writableSheetClass.addCell(cell);
 		}

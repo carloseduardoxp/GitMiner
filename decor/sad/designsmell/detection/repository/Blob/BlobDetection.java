@@ -32,7 +32,7 @@ public class BlobDetection extends AbstractDesignSmellDetection implements IDesi
 		this.operators = OperatorsCodeSmells.getInstance();
 		this.relations = Relationships.getInstance();
 	}
-	
+
 	public String getName() {
 		return "Blob";
 	}
@@ -41,43 +41,40 @@ public class BlobDetection extends AbstractDesignSmellDetection implements IDesi
 		return "../SAD Rules Creator/rsc/Blob.rules";
 	}
 
-	
-public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-final Set candidateDesignSmells = new HashSet();
+	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
+		final Set candidateDesignSmells = new HashSet();
 
-final ICodeSmellDetection csDataClass = new DataClassDetection();
-csDataClass.detect(anAbstractLevelModel);
-final Set setDataClass = ((DataClassDetection) csDataClass).getCodeSmells();
+		final ICodeSmellDetection csDataClass = new DataClassDetection();
+		csDataClass.detect(anAbstractLevelModel);
+		final Set setDataClass = ((DataClassDetection) csDataClass).getCodeSmells();
 
-final ICodeSmellDetection csControllerClass = new ControllerClassDetection();
-csControllerClass.detect(anAbstractLevelModel);
-final Set setControllerClass = ((ControllerClassDetection) csControllerClass).getCodeSmells();
+		final ICodeSmellDetection csControllerClass = new ControllerClassDetection();
+		csControllerClass.detect(anAbstractLevelModel);
+		final Set setControllerClass = ((ControllerClassDetection) csControllerClass).getCodeSmells();
 
-final ICodeSmellDetection csLowCohesion = new LowCohesionDetection();
-csLowCohesion.detect(anAbstractLevelModel);
-final Set setLowCohesion = ((LowCohesionDetection) csLowCohesion).getCodeSmells();
+		final ICodeSmellDetection csLowCohesion = new LowCohesionDetection();
+		csLowCohesion.detect(anAbstractLevelModel);
+		final Set setLowCohesion = ((LowCohesionDetection) csLowCohesion).getCodeSmells();
 
-final ICodeSmellDetection csLargeClass = new LargeClassDetection();
-csLargeClass.detect(anAbstractLevelModel);
-final Set setLargeClass = ((LargeClassDetection) csLargeClass).getCodeSmells();
+		final ICodeSmellDetection csLargeClass = new LargeClassDetection();
+		csLargeClass.detect(anAbstractLevelModel);
+		final Set setLargeClass = ((LargeClassDetection) csLargeClass).getCodeSmells();
 
-final Set setLargeClassLowCohesion = 
-this.operators.union(setLargeClass,setLowCohesion);
+		final Set setLargeClassLowCohesion = this.operators.union(setLargeClass, setLowCohesion);
 
-final Set setmainClass = 
-this.operators.union(setLargeClassLowCohesion,setControllerClass);
+		final Set setmainClass = this.operators.union(setLargeClassLowCohesion, setControllerClass);
 
-final Set setBlob = this.relations.checkAssociationOneToMany(1, setmainClass,  setDataClass);
+		final Set setBlob = this.relations.checkAssociationOneToMany(1, setmainClass, setDataClass);
 
-final Iterator iterSet = setBlob.iterator();
-while(iterSet.hasNext()) {
-final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
-final DesignSmell designSmell = new DesignSmell(aCodeSmell);
-designSmell.setName("Blob");
-final String definition = "To defined";
-designSmell.setDefinition(definition);
-candidateDesignSmells.add(designSmell);
-}
-this.setSetOfDesignSmells(candidateDesignSmells);
-}
+		final Iterator iterSet = setBlob.iterator();
+		while (iterSet.hasNext()) {
+			final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
+			final DesignSmell designSmell = new DesignSmell(aCodeSmell);
+			designSmell.setName("Blob");
+			final String definition = "To defined";
+			designSmell.setDefinition(definition);
+			candidateDesignSmells.add(designSmell);
+		}
+		this.setSetOfDesignSmells(candidateDesignSmells);
+	}
 }

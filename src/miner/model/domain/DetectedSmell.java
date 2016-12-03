@@ -6,17 +6,17 @@ public class DetectedSmell {
 
     private SmellEnum smell;
     
-    private String obs;
+    private String text;
 
     private ClassCommitChange change;
 
     public DetectedSmell() {
     }    
 
-    public DetectedSmell(SmellEnum smell, ClassCommitChange change,String obs) {
+    public DetectedSmell(SmellEnum smell, ClassCommitChange change,String text) {
         this.smell = smell;
         this.change = change;
-        this.obs = obs;
+        this.text = text;
     }
 
     public Integer getId() {
@@ -35,12 +35,12 @@ public class DetectedSmell {
         this.smell = smell;
     }
 
-    public String getObs() {
-        return obs;
+    public String getText() {
+        return text;
     }
 
-    public void setObs(String obs) {
-        this.obs = obs;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public ClassCommitChange getChange() {
@@ -53,7 +53,7 @@ public class DetectedSmell {
 
 	@Override
 	public String toString() {
-		return "DetectedSmell [id=" + id + ", smell=" + smell + ", obs=" + obs + ", change=" + change.getJavaClass().getId()+" - "+change.getCommitChange().getId() + "]";
+		return "DetectedSmell [id=" + id + ", smell=" + smell + ", obs=" + text + ", change=" + change.getJavaClass().getId()+" - "+change.getCommitChange().getId() + "]";
 	}
 
     

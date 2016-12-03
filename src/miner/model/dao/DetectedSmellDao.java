@@ -35,7 +35,7 @@ public class DetectedSmellDao {
             DetectedSmell detectedSmell = new DetectedSmell();
             detectedSmell.setId(rs.getInt(1));
             detectedSmell.setSmell(SmellEnum.getSmellName(rs.getString(2)));
-            detectedSmell.setObs(rs.getString(3));
+            detectedSmell.setText(rs.getString(3));
             detectedSmell.setChange(change);
             detectedSmells.add(detectedSmell);
         }
@@ -67,7 +67,7 @@ public class DetectedSmellDao {
 	private Map<Integer, Object> convertToParametersMetric(DetectedSmell smell) {
 		Map<Integer,Object> parameters = new HashMap<>();
         parameters.put(1,smell.getSmell().toString());
-        parameters.put(2,smell.getObs());
+        parameters.put(2,smell.getText());
         parameters.put(3,smell.getChange().getCommitChange().getId());
         parameters.put(4,smell.getChange().getJavaClass().getId());
         return parameters;        

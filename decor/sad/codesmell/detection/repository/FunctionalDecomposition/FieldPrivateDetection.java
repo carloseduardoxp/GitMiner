@@ -50,7 +50,7 @@ import util.io.ProxyConsole;
 
 public class FieldPrivateDetection extends AbstractCodeSmellDetection implements ICodeSmellDetection {
 	private static final int RATIO_PRIVATE_FIELD = 100;
-	
+
 	public String getName() {
 		return "FieldPrivate";
 	}
@@ -65,24 +65,24 @@ public class FieldPrivateDetection extends AbstractCodeSmellDetection implements
 				final IClass aClass = (IClass) entity;
 				final Set setOfFieldPrivate = new HashSet();
 				int numField = 0;
-				
+
 				final Iterator iter2 = aClass.getIteratorOnConstituents(IField.class);
 				while (iter2.hasNext()) {
-					numField ++;
+					numField++;
 					final IField aField = (IField) iter2.next();
 					if (aField.isPrivate()) {
 						setOfFieldPrivate.add(new FieldProperty(aField));
 					}
 				}
-				
-				if (numField > 0 && (setOfFieldPrivate.size()*100/numField) >= FieldPrivateDetection.RATIO_PRIVATE_FIELD) {
+
+				if (numField > 0
+						&& (setOfFieldPrivate.size() * 100 / numField) >= FieldPrivateDetection.RATIO_PRIVATE_FIELD) {
 					try {
 						ClassProperty classProp = new ClassProperty(aClass);
 						classProp.addProperties(setOfFieldPrivate);
-							
+
 						classesFieldPrivate.add(new CodeSmell("FieldPrivate", "", classProp));
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace(ProxyConsole.getInstance().errorOutput());
 					}
@@ -90,5 +90,5 @@ public class FieldPrivateDetection extends AbstractCodeSmellDetection implements
 			}
 		}
 		this.setSetOfSmells(classesFieldPrivate);
-	}	
+	}
 }

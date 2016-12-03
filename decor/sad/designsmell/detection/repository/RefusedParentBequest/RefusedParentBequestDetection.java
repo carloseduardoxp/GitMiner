@@ -32,7 +32,7 @@ public class RefusedParentBequestDetection extends AbstractDesignSmellDetection 
 		this.operators = OperatorsCodeSmells.getInstance();
 		this.relations = Relationships.getInstance();
 	}
-	
+
 	public String getName() {
 		return "RefusedParentBequest";
 	}
@@ -41,29 +41,30 @@ public class RefusedParentBequestDetection extends AbstractDesignSmellDetection 
 		return "../SAD Rules Creator/rsc/RefusedParentBequest.rules";
 	}
 
-	
-public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-final Set candidateDesignSmells = new HashSet();
+	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
+		final Set candidateDesignSmells = new HashSet();
 
-final ICodeSmellDetection csRareOverriding = new RareOverridingDetection();
-csRareOverriding.detect(anAbstractLevelModel);
-final Set setRareOverriding = ((RareOverridingDetection) csRareOverriding).getCodeSmells();
+		final ICodeSmellDetection csRareOverriding = new RareOverridingDetection();
+		csRareOverriding.detect(anAbstractLevelModel);
+		final Set setRareOverriding = ((RareOverridingDetection) csRareOverriding).getCodeSmells();
 
-final ICodeSmellDetection csParentClassProvidesProtected = new ParentClassProvidesProtectedDetection();
-csParentClassProvidesProtected.detect(anAbstractLevelModel);
-final Set setParentClassProvidesProtected = ((ParentClassProvidesProtectedDetection) csParentClassProvidesProtected).getCodeSmells();
+		final ICodeSmellDetection csParentClassProvidesProtected = new ParentClassProvidesProtectedDetection();
+		csParentClassProvidesProtected.detect(anAbstractLevelModel);
+		final Set setParentClassProvidesProtected = ((ParentClassProvidesProtectedDetection) csParentClassProvidesProtected)
+				.getCodeSmells();
 
-final Set setRefusedParentBequest = this.relations.checkAssociationOneToOne(4, setParentClassProvidesProtected,  setRareOverriding);
+		final Set setRefusedParentBequest = this.relations.checkAssociationOneToOne(4, setParentClassProvidesProtected,
+				setRareOverriding);
 
-final Iterator iterSet = setRefusedParentBequest.iterator();
-while(iterSet.hasNext()) {
-final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
-final DesignSmell designSmell = new DesignSmell(aCodeSmell);
-designSmell.setName("RefusedParentBequest");
-final String definition = "To defined";
-designSmell.setDefinition(definition);
-candidateDesignSmells.add(designSmell);
-}
-this.setSetOfDesignSmells(candidateDesignSmells);
-}
+		final Iterator iterSet = setRefusedParentBequest.iterator();
+		while (iterSet.hasNext()) {
+			final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
+			final DesignSmell designSmell = new DesignSmell(aCodeSmell);
+			designSmell.setName("RefusedParentBequest");
+			final String definition = "To defined";
+			designSmell.setDefinition(definition);
+			candidateDesignSmells.add(designSmell);
+		}
+		this.setSetOfDesignSmells(candidateDesignSmells);
+	}
 }

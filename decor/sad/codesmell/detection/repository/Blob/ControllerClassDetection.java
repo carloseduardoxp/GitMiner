@@ -68,122 +68,101 @@ public class ControllerClassDetection extends AbstractCodeSmellDetection impleme
 		this.setSetOfSmells(setOperation);
 	}
 
-	
+	public class OPERAND1Detection extends AbstractCodeSmellDetection implements ICodeSmellDetection {
 
-public class OPERAND1Detection extends AbstractCodeSmellDetection implements ICodeSmellDetection {
+		public String getName() {
+			return "OPERAND1Detection";
+		}
 
-	
-	
-	public String getName() {
-		return "OPERAND1Detection";
-	}
+		public void detect(final IAbstractLevelModel anAbstractLevelModel) {
 
-	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-		
-String[] CTRL_NAME = new String[]{"Drive","Manage","UI","Proc","Process","Cmd","Command","Ctrl","Control","Process"};
-final Set ControllerClasssFound = new HashSet();
-final Iterator iter = anAbstractLevelModel.getIteratorOnTopLevelEntities();
-while (iter.hasNext()) {
-	final IEntity entity = (IEntity) iter.next();
-	if (entity instanceof IClass) {
-	final IClass aClass = (IClass) entity;
-	boolean isControllerClass = false;
-// we check the names of methods
+			String[] CTRL_NAME = new String[] { "Drive", "Manage", "UI", "Proc", "Process", "Cmd", "Command", "Ctrl",
+					"Control", "Process" };
+			final Set ControllerClasssFound = new HashSet();
+			final Iterator iter = anAbstractLevelModel.getIteratorOnTopLevelEntities();
+			while (iter.hasNext()) {
+				final IEntity entity = (IEntity) iter.next();
+				if (entity instanceof IClass) {
+					final IClass aClass = (IClass) entity;
+					boolean isControllerClass = false;
+					// we check the names of methods
 
-String detectedKeyword = "";
-IMethod detectedMethod = null;
+					String detectedKeyword = "";
+					IMethod detectedMethod = null;
 
+					final Iterator iteratorMethods = aClass.getIteratorOnConstituents(IMethod.class);
+					while (iteratorMethods.hasNext() && !isControllerClass) {
+						final IMethod method = (IMethod) iteratorMethods.next();
+						for (int i = 0; i < CTRL_NAME.length && !isControllerClass; i++) {
+							if (method.getDisplayName().startsWith(CTRL_NAME[i])) {
+								isControllerClass = true;
+								detectedKeyword = CTRL_NAME[i];
+								detectedMethod = method;
+							}
+						}
+					}
+					if (isControllerClass) {
 
-final Iterator iteratorMethods = aClass
-		.getIteratorOnConstituents(IMethod.class);
-while (iteratorMethods.hasNext() && !isControllerClass) {
-		final IMethod method = (IMethod) iteratorMethods.next();
-		for (int i = 0; i < CTRL_NAME.length
-			&& !isControllerClass; i++) {
-			if (method.getDisplayName().startsWith(CTRL_NAME[i])) {
-				isControllerClass = true;
-				detectedKeyword = CTRL_NAME[i];
-				detectedMethod = method;
+						ClassProperty classProp = new ClassProperty(aClass);
+						try {
+							MethodProperty mp = new MethodProperty(detectedMethod);
+							mp.addProperty(new SemanticProperty(detectedKeyword));
+							classProp.addProperty(mp);
+						} catch (Exception e) {
+							// TODO: Auto generated
+						}
+						ControllerClasssFound.add(new CodeSmell("ControllerClass", "", classProp));
+
+					}
+				}
 			}
+			this.setSetOfSmells(ControllerClasssFound);
 		}
-}
-	if (isControllerClass) {
-
-
-ClassProperty classProp = new ClassProperty(aClass);
-try {
-MethodProperty mp = new MethodProperty(
-detectedMethod);
-mp.addProperty(new SemanticProperty(
-detectedKeyword));
-classProp.addProperty(mp);
-}
-catch (Exception e) {
-// TODO: Auto generated
-}
-ControllerClasssFound.add(new CodeSmell("ControllerClass", "", classProp));
 
 	}
-	}
-}
-this.setSetOfSmells(ControllerClasssFound);
-	}
-	
-	
-}
 
-	
-	
+	public class OPERAND2Detection extends AbstractCodeSmellDetection implements ICodeSmellDetection {
 
-public class OPERAND2Detection extends AbstractCodeSmellDetection implements ICodeSmellDetection {
-
-	
-	
-	public String getName() {
-		return "OPERAND2Detection";
-	}
-
-	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-		
-String[] CTRL_NAME = new String[]{"Subsystem","System","Drive","Manage","UI","Proc","Process","Cmd","Command","Ctrl","Control","Process"};
-final Set ControllerClasssFound = new HashSet();
-final Iterator iter = anAbstractLevelModel.getIteratorOnTopLevelEntities();
-while (iter.hasNext()) {
-	final IEntity entity = (IEntity) iter.next();
-	if (entity instanceof IClass) {
-	final IClass aClass = (IClass) entity;
-	boolean isControllerClass = false;
-	// we check the names of classes
-
-String detectedKeyword = "";
-	for (int i = 0; i < CTRL_NAME.length
-			&& !isControllerClass; i++) {
-		if (aClass.getDisplayName().indexOf(CTRL_NAME[i]) > -1) {
-		isControllerClass = true;
-		detectedKeyword = CTRL_NAME[i];
+		public String getName() {
+			return "OPERAND2Detection";
 		}
-	}
-	if (isControllerClass) {
 
+		public void detect(final IAbstractLevelModel anAbstractLevelModel) {
 
-ClassProperty classProp = new ClassProperty(aClass);
-try {
-classProp.addProperty(new SemanticProperty(
-detectedKeyword));
-}
-catch (Exception e) {
-// TODO: Auto generated
-}
-ControllerClasssFound.add(new CodeSmell("ControllerClass", "", classProp));
+			String[] CTRL_NAME = new String[] { "Subsystem", "System", "Drive", "Manage", "UI", "Proc", "Process",
+					"Cmd", "Command", "Ctrl", "Control", "Process" };
+			final Set ControllerClasssFound = new HashSet();
+			final Iterator iter = anAbstractLevelModel.getIteratorOnTopLevelEntities();
+			while (iter.hasNext()) {
+				final IEntity entity = (IEntity) iter.next();
+				if (entity instanceof IClass) {
+					final IClass aClass = (IClass) entity;
+					boolean isControllerClass = false;
+					// we check the names of classes
+
+					String detectedKeyword = "";
+					for (int i = 0; i < CTRL_NAME.length && !isControllerClass; i++) {
+						if (aClass.getDisplayName().indexOf(CTRL_NAME[i]) > -1) {
+							isControllerClass = true;
+							detectedKeyword = CTRL_NAME[i];
+						}
+					}
+					if (isControllerClass) {
+
+						ClassProperty classProp = new ClassProperty(aClass);
+						try {
+							classProp.addProperty(new SemanticProperty(detectedKeyword));
+						} catch (Exception e) {
+							// TODO: Auto generated
+						}
+						ControllerClasssFound.add(new CodeSmell("ControllerClass", "", classProp));
+
+					}
+				}
+			}
+			this.setSetOfSmells(ControllerClasssFound);
+		}
 
 	}
-	}
-}
-this.setSetOfSmells(ControllerClasssFound);
-	}
-	
-	
-}
-
 
 }

@@ -200,7 +200,7 @@
         </sql>	
         <sql name="smellsByChange">
             <query>	
-                SELECT DS.CD_DETECTED_SMELL,DS.NM_DETECTED_SMELL,DS.DS_OBSERVACAO
+                SELECT DS.CD_DETECTED_SMELL,DS.NM_DETECTED_SMELL,DS.DS_TEXT
                 FROM TB_DETECTED_SMELL DS
                 WHERE DS.CD_COMMIT_CHANGE = ?
                   AND DS.CD_CLASS = ?
@@ -270,7 +270,7 @@
         
         <sql name="insertCodeSmells">
         	<query>
-        		INSERT INTO TB_DETECTED_SMELL(NM_DETECTED_SMELL,DS_OBSERVACAO,CD_COMMIT_CHANGE,CD_CLASS) VALUES (?,?,?,?) 
+        		INSERT INTO TB_DETECTED_SMELL(NM_DETECTED_SMELL,DS_TEXT,CD_COMMIT_CHANGE,CD_CLASS) VALUES (?,?,?,?) 
         	</query>
         </sql>
             

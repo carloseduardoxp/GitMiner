@@ -44,13 +44,13 @@ public class LongMethodClassDetection extends AbstractCodeSmellDetection impleme
 			if (entity instanceof IClass) {				
 				final IClass aClass = (IClass) entity;				
 				IClass classOfLongMethodClass = null;
-				IMethod LongMethodClass = null;
+				IConstructor LongMethodClass = null;
 				Integer longValue = new Integer(0);
 
 				// for each class, we get the LongMethodClass
 				final Iterator iter2 = aClass.getIteratorOnConstituents(IConstructor.class);
 				while (iter2.hasNext()) {
-					final IMethod aMethod = (IMethod) iter2.next();
+					final IConstructor aMethod = (IConstructor) iter2.next();
 					if (!aMethod.isAbstract() && (aMethod.getVisibility() & Modifier.NATIVE) == 0) {
 						final Integer value = new Integer(aMethod.getCodeLines().length);
 
@@ -84,7 +84,7 @@ public class LongMethodClassDetection extends AbstractCodeSmellDetection impleme
 		while (iter3.hasNext()) {
 			// we get first the mapMethodsWithClass(aClass, longMethod)
 			final IClass aClass = (IClass) iter3.next();
-			final IMethod aLongMethodClass = (IMethod) mapClassesWithMethods.get(aClass);
+			final IConstructor aLongMethodClass = (IConstructor) mapClassesWithMethods.get(aClass);
 
 			try {
 				ClassProperty classProp = new ClassProperty(aClass);

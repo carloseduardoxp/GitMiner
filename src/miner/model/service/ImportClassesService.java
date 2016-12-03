@@ -123,6 +123,10 @@ public class ImportClassesService {
 				Log.writeLog("Cant analyse jars " + fileName + " - " +classPath);
 				continue;
 			}
+			if (!fileName.endsWith(".java")) {
+				Log.writeLog("Will not analyse non javaFile " + fileName + " - " +classPath);
+				continue;
+			}
 			try {
 				List<String> classNames = analyseCodeLevelModelFromJavaSourceFiles(path, classPath,fileName);
 				if (classNames.isEmpty()) {

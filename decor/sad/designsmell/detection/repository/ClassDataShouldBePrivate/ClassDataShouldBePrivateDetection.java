@@ -32,7 +32,7 @@ public class ClassDataShouldBePrivateDetection extends AbstractDesignSmellDetect
 		this.operators = OperatorsCodeSmells.getInstance();
 		this.relations = Relationships.getInstance();
 	}
-	
+
 	public String getName() {
 		return "ClassDataShouldBePrivate";
 	}
@@ -41,23 +41,22 @@ public class ClassDataShouldBePrivateDetection extends AbstractDesignSmellDetect
 		return "../SAD Rules Creator/rsc/ClassDataShouldBePrivate.rules";
 	}
 
-	
-public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-final Set candidateDesignSmells = new HashSet();
+	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
+		final Set candidateDesignSmells = new HashSet();
 
-final ICodeSmellDetection csFieldPublic = new FieldPublicDetection();
-csFieldPublic.detect(anAbstractLevelModel);
-final Set setFieldPublic = ((FieldPublicDetection) csFieldPublic).getCodeSmells();
+		final ICodeSmellDetection csFieldPublic = new FieldPublicDetection();
+		csFieldPublic.detect(anAbstractLevelModel);
+		final Set setFieldPublic = ((FieldPublicDetection) csFieldPublic).getCodeSmells();
 
-final Iterator iterSet = setFieldPublic.iterator();
-while(iterSet.hasNext()) {
-final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
-final DesignSmell designSmell = new DesignSmell(aCodeSmell);
-designSmell.setName("ClassDataShouldBePrivate");
-final String definition = "To defined";
-designSmell.setDefinition(definition);
-candidateDesignSmells.add(designSmell);
-}
-this.setSetOfDesignSmells(candidateDesignSmells);
-}
+		final Iterator iterSet = setFieldPublic.iterator();
+		while (iterSet.hasNext()) {
+			final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
+			final DesignSmell designSmell = new DesignSmell(aCodeSmell);
+			designSmell.setName("ClassDataShouldBePrivate");
+			final String definition = "To defined";
+			designSmell.setDefinition(definition);
+			candidateDesignSmells.add(designSmell);
+		}
+		this.setSetOfDesignSmells(candidateDesignSmells);
+	}
 }

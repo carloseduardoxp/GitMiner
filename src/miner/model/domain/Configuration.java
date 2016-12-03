@@ -36,7 +36,7 @@ public class Configuration {
 
     private String pathLog;
 
-    private String pathWeka;
+    private String pathExport;
 
     public Configuration(String url) {
         this.url = url;
@@ -126,12 +126,12 @@ public class Configuration {
         this.pathLog = pathLog;
     }
 
-    public String getPathWeka() {
-        return pathWeka;
+    public String getPathExport() {
+        return pathExport;
     }
 
-    public void setPathWeka(String pathWeka) {
-        this.pathWeka = pathWeka;
+    public void setPathExport(String pathExport) {
+        this.pathExport = pathExport;
     }
 
     public void validate(boolean newConfiguration) throws ValidationException {
@@ -145,7 +145,7 @@ public class Configuration {
             validatePath(new File(pathCommits));
             validatePath(new File(pathClasses));
             validatePath(new File(pathLog));
-            validatePath(new File(pathWeka));
+            validatePath(new File(pathExport));
         }
 
         if (!JdbcConnection.testConnection(this)) {
@@ -170,7 +170,7 @@ public class Configuration {
         newConfiguration.setPathLog(pathLog);
         newConfiguration.setPathCommits(pathCommits);
         newConfiguration.setPathDownloads(pathDownloads);
-        newConfiguration.setPathWeka(pathWeka);
+        newConfiguration.setPathExport(pathExport);
         return newConfiguration;
     }
 
@@ -178,7 +178,7 @@ public class Configuration {
         new File(getPathClasses()).mkdirs();
         new File(getPathCommits()).mkdirs();
         new File(getPathLog()).mkdirs();
-        new File(getPathWeka()).mkdirs();
+        new File(getPathExport()).mkdirs();
         new File(getPathDownloads()).mkdirs();
     }
     

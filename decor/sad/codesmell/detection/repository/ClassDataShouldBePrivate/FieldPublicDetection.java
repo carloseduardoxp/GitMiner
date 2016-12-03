@@ -51,7 +51,7 @@ import util.io.ProxyConsole;
 public class FieldPublicDetection extends AbstractCodeSmellDetection implements ICodeSmellDetection {
 
 	private static final int RATIO_PUBLIC_FIELD = 1;
-	
+
 	public String getName() {
 		return "FieldPublic";
 	}
@@ -66,24 +66,24 @@ public class FieldPublicDetection extends AbstractCodeSmellDetection implements 
 				final IClass aClass = (IClass) entity;
 				final Set setOfFieldPublic = new HashSet();
 				int numField = 0;
-				
+
 				final Iterator iter2 = aClass.getIteratorOnConstituents(IField.class);
 				while (iter2.hasNext()) {
-					numField ++;
+					numField++;
 					final IField aField = (IField) iter2.next();
-				if (aField.isPublic()  && !aField.isFinal()) {
+					if (aField.isPublic() && !aField.isFinal()) {
 						setOfFieldPublic.add(new FieldProperty(aField));
 					}
 				}
-				
-				if (numField > 0 && (setOfFieldPublic.size()*100/numField) >= FieldPublicDetection.RATIO_PUBLIC_FIELD) {
+
+				if (numField > 0
+						&& (setOfFieldPublic.size() * 100 / numField) >= FieldPublicDetection.RATIO_PUBLIC_FIELD) {
 					try {
 						ClassProperty classProp = new ClassProperty(aClass);
 						classProp.addProperties(setOfFieldPublic);
-							
+
 						classesFieldPublic.add(new CodeSmell("FieldPublic", "", classProp));
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace(ProxyConsole.getInstance().errorOutput());
 					}
@@ -91,5 +91,5 @@ public class FieldPublicDetection extends AbstractCodeSmellDetection implements 
 			}
 		}
 		this.setSetOfSmells(classesFieldPublic);
-	}	
+	}
 }

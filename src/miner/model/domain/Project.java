@@ -84,7 +84,7 @@ public class Project {
     
     public String getLocalPathWeka() {
         try {
-            return (DaoFactory.getConfigurationDao().getConfiguration().getPathWeka()+"/" + getName()).replaceAll("\\\\","/").replaceAll("//","/");
+            return (DaoFactory.getConfigurationDao().getConfiguration().getPathExport()+"/" + getName()).replaceAll("\\\\","/").replaceAll("//","/");
         } catch (ObjectNotFoundException | ValidationException e) {
             throw new RuntimeException("Error on find local path " + e.getMessage());
         }     

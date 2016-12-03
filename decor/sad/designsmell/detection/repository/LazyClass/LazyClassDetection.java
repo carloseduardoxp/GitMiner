@@ -32,7 +32,7 @@ public class LazyClassDetection extends AbstractDesignSmellDetection implements 
 		this.operators = OperatorsCodeSmells.getInstance();
 		this.relations = Relationships.getInstance();
 	}
-	
+
 	public String getName() {
 		return "LazyClass";
 	}
@@ -41,30 +41,28 @@ public class LazyClassDetection extends AbstractDesignSmellDetection implements 
 		return "../SAD Rules Creator/rsc/LazyClass.rules";
 	}
 
-	
-public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-final Set candidateDesignSmells = new HashSet();
+	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
+		final Set candidateDesignSmells = new HashSet();
 
-final ICodeSmellDetection csFewMethods = new FewMethodsDetection();
-csFewMethods.detect(anAbstractLevelModel);
-final Set setFewMethods = ((FewMethodsDetection) csFewMethods).getCodeSmells();
+		final ICodeSmellDetection csFewMethods = new FewMethodsDetection();
+		csFewMethods.detect(anAbstractLevelModel);
+		final Set setFewMethods = ((FewMethodsDetection) csFewMethods).getCodeSmells();
 
-final ICodeSmellDetection csNotComplexClass = new NotComplexClassDetection();
-csNotComplexClass.detect(anAbstractLevelModel);
-final Set setNotComplexClass = ((NotComplexClassDetection) csNotComplexClass).getCodeSmells();
+		final ICodeSmellDetection csNotComplexClass = new NotComplexClassDetection();
+		csNotComplexClass.detect(anAbstractLevelModel);
+		final Set setNotComplexClass = ((NotComplexClassDetection) csNotComplexClass).getCodeSmells();
 
-final Set setLazyClass = 
-this.operators.intersection(setNotComplexClass,setFewMethods);
+		final Set setLazyClass = this.operators.intersection(setNotComplexClass, setFewMethods);
 
-final Iterator iterSet = setLazyClass.iterator();
-while(iterSet.hasNext()) {
-final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
-final DesignSmell designSmell = new DesignSmell(aCodeSmell);
-designSmell.setName("LazyClass");
-final String definition = "To defined";
-designSmell.setDefinition(definition);
-candidateDesignSmells.add(designSmell);
-}
-this.setSetOfDesignSmells(candidateDesignSmells);
-}
+		final Iterator iterSet = setLazyClass.iterator();
+		while (iterSet.hasNext()) {
+			final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
+			final DesignSmell designSmell = new DesignSmell(aCodeSmell);
+			designSmell.setName("LazyClass");
+			final String definition = "To defined";
+			designSmell.setDefinition(definition);
+			candidateDesignSmells.add(designSmell);
+		}
+		this.setSetOfDesignSmells(candidateDesignSmells);
+	}
 }

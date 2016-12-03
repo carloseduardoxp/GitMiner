@@ -32,7 +32,7 @@ public class SpaghettiCodeDetection extends AbstractDesignSmellDetection impleme
 		this.operators = OperatorsCodeSmells.getInstance();
 		this.relations = Relationships.getInstance();
 	}
-	
+
 	public String getName() {
 		return "SpaghettiCode";
 	}
@@ -41,44 +41,42 @@ public class SpaghettiCodeDetection extends AbstractDesignSmellDetection impleme
 		return "../SAD Rules Creator/rsc/SpaghettiCode.rules";
 	}
 
-	
-public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-final Set candidateDesignSmells = new HashSet();
+	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
+		final Set candidateDesignSmells = new HashSet();
 
-final ICodeSmellDetection csClassGlobalVariable = new ClassGlobalVariableDetection();
-csClassGlobalVariable.detect(anAbstractLevelModel);
-final Set setClassGlobalVariable = ((ClassGlobalVariableDetection) csClassGlobalVariable).getCodeSmells();
+		final ICodeSmellDetection csClassGlobalVariable = new ClassGlobalVariableDetection();
+		csClassGlobalVariable.detect(anAbstractLevelModel);
+		final Set setClassGlobalVariable = ((ClassGlobalVariableDetection) csClassGlobalVariable).getCodeSmells();
 
-final ICodeSmellDetection csNoInheritance = new NoInheritanceDetection();
-csNoInheritance.detect(anAbstractLevelModel);
-final Set setNoInheritance = ((NoInheritanceDetection) csNoInheritance).getCodeSmells();
+		final ICodeSmellDetection csNoInheritance = new NoInheritanceDetection();
+		csNoInheritance.detect(anAbstractLevelModel);
+		final Set setNoInheritance = ((NoInheritanceDetection) csNoInheritance).getCodeSmells();
 
-final Set setNoInheritanceClassGlobalVariable = 
-this.operators.intersection(setNoInheritance,setClassGlobalVariable);
+		final Set setNoInheritanceClassGlobalVariable = this.operators.intersection(setNoInheritance,
+				setClassGlobalVariable);
 
-final ICodeSmellDetection csMethodNoParameter = new MethodNoParameterDetection();
-csMethodNoParameter.detect(anAbstractLevelModel);
-final Set setMethodNoParameter = ((MethodNoParameterDetection) csMethodNoParameter).getCodeSmells();
+		final ICodeSmellDetection csMethodNoParameter = new MethodNoParameterDetection();
+		csMethodNoParameter.detect(anAbstractLevelModel);
+		final Set setMethodNoParameter = ((MethodNoParameterDetection) csMethodNoParameter).getCodeSmells();
 
-final ICodeSmellDetection csLongMethod = new LongMethodDetection();
-csLongMethod.detect(anAbstractLevelModel);
-final Set setLongMethod = ((LongMethodDetection) csLongMethod).getCodeSmells();
+		final ICodeSmellDetection csLongMethod = new LongMethodDetection();
+		csLongMethod.detect(anAbstractLevelModel);
+		final Set setLongMethod = ((LongMethodDetection) csLongMethod).getCodeSmells();
 
-final Set setLongMethodMethodNoParameter = 
-this.operators.intersection(setLongMethod,setMethodNoParameter);
+		final Set setLongMethodMethodNoParameter = this.operators.intersection(setLongMethod, setMethodNoParameter);
 
-final Set setSpaghettiCode = 
-this.operators.intersection(setNoInheritanceClassGlobalVariable,setLongMethodMethodNoParameter);
+		final Set setSpaghettiCode = this.operators.intersection(setNoInheritanceClassGlobalVariable,
+				setLongMethodMethodNoParameter);
 
-final Iterator iterSet = setSpaghettiCode.iterator();
-while(iterSet.hasNext()) {
-final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
-final DesignSmell designSmell = new DesignSmell(aCodeSmell);
-designSmell.setName("SpaghettiCode");
-final String definition = "To defined";
-designSmell.setDefinition(definition);
-candidateDesignSmells.add(designSmell);
-}
-this.setSetOfDesignSmells(candidateDesignSmells);
-}
+		final Iterator iterSet = setSpaghettiCode.iterator();
+		while (iterSet.hasNext()) {
+			final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
+			final DesignSmell designSmell = new DesignSmell(aCodeSmell);
+			designSmell.setName("SpaghettiCode");
+			final String definition = "To defined";
+			designSmell.setDefinition(definition);
+			candidateDesignSmells.add(designSmell);
+		}
+		this.setSetOfDesignSmells(candidateDesignSmells);
+	}
 }

@@ -40,53 +40,46 @@ import util.io.ProxyConsole;
  *
  */
 
-
 public class FunctionClassDetection extends AbstractCodeSmellDetection implements ICodeSmellDetection {
 
-	
-	
 	public String getName() {
 		return "FunctionClassDetection";
 	}
 
 	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-		
-String[] CTRL_NAME = new String[]{"Calculate","Display","Compute","Exec","Execute","Creator","Create","Make"};
-final Set FunctionClasssFound = new HashSet();
-final Iterator iter = anAbstractLevelModel.getIteratorOnTopLevelEntities();
-while (iter.hasNext()) {
-	final IEntity entity = (IEntity) iter.next();
-	if (entity instanceof IClass) {
-	final IClass aClass = (IClass) entity;
-	boolean isFunctionClass = false;
-	// we check the names of classes
 
-String detectedKeyword = "";
-	for (int i = 0; i < CTRL_NAME.length
-			&& !isFunctionClass; i++) {
-		if (aClass.getDisplayName().indexOf(CTRL_NAME[i]) > -1) {
-		isFunctionClass = true;
-		detectedKeyword = CTRL_NAME[i];
+		String[] CTRL_NAME = new String[] { "Calculate", "Display", "Compute", "Exec", "Execute", "Creator", "Create",
+				"Make" };
+		final Set FunctionClasssFound = new HashSet();
+		final Iterator iter = anAbstractLevelModel.getIteratorOnTopLevelEntities();
+		while (iter.hasNext()) {
+			final IEntity entity = (IEntity) iter.next();
+			if (entity instanceof IClass) {
+				final IClass aClass = (IClass) entity;
+				boolean isFunctionClass = false;
+				// we check the names of classes
+
+				String detectedKeyword = "";
+				for (int i = 0; i < CTRL_NAME.length && !isFunctionClass; i++) {
+					if (aClass.getDisplayName().indexOf(CTRL_NAME[i]) > -1) {
+						isFunctionClass = true;
+						detectedKeyword = CTRL_NAME[i];
+					}
+				}
+				if (isFunctionClass) {
+
+					ClassProperty classProp = new ClassProperty(aClass);
+					try {
+						classProp.addProperty(new SemanticProperty(detectedKeyword));
+					} catch (Exception e) {
+						// TODO: Auto generated
+					}
+					FunctionClasssFound.add(new CodeSmell("FunctionClass", "", classProp));
+
+				}
+			}
 		}
+		this.setSetOfSmells(FunctionClasssFound);
 	}
-	if (isFunctionClass) {
 
-
-ClassProperty classProp = new ClassProperty(aClass);
-try {
-classProp.addProperty(new SemanticProperty(
-detectedKeyword));
-}
-catch (Exception e) {
-// TODO: Auto generated
-}
-FunctionClasssFound.add(new CodeSmell("FunctionClass", "", classProp));
-
-	}
-	}
-}
-this.setSetOfSmells(FunctionClasssFound);
-	}
-	
-	
 }

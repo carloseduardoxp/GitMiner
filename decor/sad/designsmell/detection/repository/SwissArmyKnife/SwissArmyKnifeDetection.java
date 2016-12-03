@@ -32,7 +32,7 @@ public class SwissArmyKnifeDetection extends AbstractDesignSmellDetection implem
 		this.operators = OperatorsCodeSmells.getInstance();
 		this.relations = Relationships.getInstance();
 	}
-	
+
 	public String getName() {
 		return "SwissArmyKnife";
 	}
@@ -41,23 +41,22 @@ public class SwissArmyKnifeDetection extends AbstractDesignSmellDetection implem
 		return "../SAD Rules Creator/rsc/SwissArmyKnife.rules";
 	}
 
-	
-public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-final Set candidateDesignSmells = new HashSet();
+	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
+		final Set candidateDesignSmells = new HashSet();
 
-final ICodeSmellDetection csMultipleInterface = new MultipleInterfaceDetection();
-csMultipleInterface.detect(anAbstractLevelModel);
-final Set setMultipleInterface = ((MultipleInterfaceDetection) csMultipleInterface).getCodeSmells();
+		final ICodeSmellDetection csMultipleInterface = new MultipleInterfaceDetection();
+		csMultipleInterface.detect(anAbstractLevelModel);
+		final Set setMultipleInterface = ((MultipleInterfaceDetection) csMultipleInterface).getCodeSmells();
 
-final Iterator iterSet = setMultipleInterface.iterator();
-while(iterSet.hasNext()) {
-final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
-final DesignSmell designSmell = new DesignSmell(aCodeSmell);
-designSmell.setName("SwissArmyKnife");
-final String definition = "To defined";
-designSmell.setDefinition(definition);
-candidateDesignSmells.add(designSmell);
-}
-this.setSetOfDesignSmells(candidateDesignSmells);
-}
+		final Iterator iterSet = setMultipleInterface.iterator();
+		while (iterSet.hasNext()) {
+			final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
+			final DesignSmell designSmell = new DesignSmell(aCodeSmell);
+			designSmell.setName("SwissArmyKnife");
+			final String definition = "To defined";
+			designSmell.setDefinition(definition);
+			candidateDesignSmells.add(designSmell);
+		}
+		this.setSetOfDesignSmells(candidateDesignSmells);
+	}
 }

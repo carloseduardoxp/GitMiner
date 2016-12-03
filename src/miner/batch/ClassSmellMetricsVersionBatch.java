@@ -15,9 +15,9 @@ public class ClassSmellMetricsVersionBatch implements miner.model.service.Observ
 		List<Project> projects = new ArrayList<>();
 		
 		//projects.add(new Project(3,"Commons-Lang","https://github.com/apache/commons-lang.git"));
-		projects.add(new Project(4,"Commons-IO","https://github.com/apache/commons-io.git"));				
+		//projects.add(new Project(4,"Commons-IO","https://github.com/apache/commons-io.git"));				
 		//projects.add(new Project(5,"Commons-Collections","https://github.com/apache/commons-collections.git"));
-		projects.add(new Project(6,"Commons-Logging","https://github.com/apache/commons-logging.git"));
+		//projects.add(new Project(6,"Commons-Logging","https://github.com/apache/commons-logging.git"));
 		projects.add(new Project(1,"JCommon","https://github.com/facebook/jcommon.git"));
 		
 		for (Project project: projects) {

@@ -83,7 +83,7 @@ public final class ConfigurationControl {
        newConfiguration.setPathClasses(configuration.getPathRootSystem()+"/classes/");
        newConfiguration.setPathLog(configuration.getPathRootSystem()+"/log/");
        newConfiguration.setPathDownloads(configuration.getPathRootSystem()+"/downloads/");
-       newConfiguration.setPathWeka(configuration.getPathRootSystem()+"/weka/");   
+       newConfiguration.setPathExport(configuration.getPathRootSystem()+"/export/");   
        setConfiguration(newConfiguration);
     }
 

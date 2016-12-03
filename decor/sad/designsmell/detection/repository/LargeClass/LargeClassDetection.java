@@ -32,7 +32,7 @@ public class LargeClassDetection extends AbstractDesignSmellDetection implements
 		this.operators = OperatorsCodeSmells.getInstance();
 		this.relations = Relationships.getInstance();
 	}
-	
+
 	public String getName() {
 		return "LargeClass";
 	}
@@ -41,30 +41,28 @@ public class LargeClassDetection extends AbstractDesignSmellDetection implements
 		return "../SAD Rules Creator/rsc/LargeClass.rules";
 	}
 
-	
-public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-final Set candidateDesignSmells = new HashSet();
+	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
+		final Set candidateDesignSmells = new HashSet();
 
-final ICodeSmellDetection csLowCohesionOnly = new LowCohesionOnlyDetection();
-csLowCohesionOnly.detect(anAbstractLevelModel);
-final Set setLowCohesionOnly = ((LowCohesionOnlyDetection) csLowCohesionOnly).getCodeSmells();
+		final ICodeSmellDetection csLowCohesionOnly = new LowCohesionOnlyDetection();
+		csLowCohesionOnly.detect(anAbstractLevelModel);
+		final Set setLowCohesionOnly = ((LowCohesionOnlyDetection) csLowCohesionOnly).getCodeSmells();
 
-final ICodeSmellDetection csLargeClassOnly = new LargeClassOnlyDetection();
-csLargeClassOnly.detect(anAbstractLevelModel);
-final Set setLargeClassOnly = ((LargeClassOnlyDetection) csLargeClassOnly).getCodeSmells();
+		final ICodeSmellDetection csLargeClassOnly = new LargeClassOnlyDetection();
+		csLargeClassOnly.detect(anAbstractLevelModel);
+		final Set setLargeClassOnly = ((LargeClassOnlyDetection) csLargeClassOnly).getCodeSmells();
 
-final Set setLargeClass = 
-this.operators.intersection(setLargeClassOnly,setLowCohesionOnly);
+		final Set setLargeClass = this.operators.intersection(setLargeClassOnly, setLowCohesionOnly);
 
-final Iterator iterSet = setLargeClass.iterator();
-while(iterSet.hasNext()) {
-final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
-final DesignSmell designSmell = new DesignSmell(aCodeSmell);
-designSmell.setName("LargeClass");
-final String definition = "To defined";
-designSmell.setDefinition(definition);
-candidateDesignSmells.add(designSmell);
-}
-this.setSetOfDesignSmells(candidateDesignSmells);
-}
+		final Iterator iterSet = setLargeClass.iterator();
+		while (iterSet.hasNext()) {
+			final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
+			final DesignSmell designSmell = new DesignSmell(aCodeSmell);
+			designSmell.setName("LargeClass");
+			final String definition = "To defined";
+			designSmell.setDefinition(definition);
+			candidateDesignSmells.add(designSmell);
+		}
+		this.setSetOfDesignSmells(candidateDesignSmells);
+	}
 }

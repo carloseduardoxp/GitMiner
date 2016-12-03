@@ -32,7 +32,7 @@ public class SpeculativeGeneralityDetection extends AbstractDesignSmellDetection
 		this.operators = OperatorsCodeSmells.getInstance();
 		this.relations = Relationships.getInstance();
 	}
-	
+
 	public String getName() {
 		return "SpeculativeGenerality";
 	}
@@ -41,30 +41,28 @@ public class SpeculativeGeneralityDetection extends AbstractDesignSmellDetection
 		return "../SAD Rules Creator/rsc/SpeculativeGenerality.rules";
 	}
 
-	
-public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-final Set candidateDesignSmells = new HashSet();
+	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
+		final Set candidateDesignSmells = new HashSet();
 
-final ICodeSmellDetection csOneChildClass = new OneChildClassDetection();
-csOneChildClass.detect(anAbstractLevelModel);
-final Set setOneChildClass = ((OneChildClassDetection) csOneChildClass).getCodeSmells();
+		final ICodeSmellDetection csOneChildClass = new OneChildClassDetection();
+		csOneChildClass.detect(anAbstractLevelModel);
+		final Set setOneChildClass = ((OneChildClassDetection) csOneChildClass).getCodeSmells();
 
-final ICodeSmellDetection csAbstractClass = new AbstractClassDetection();
-csAbstractClass.detect(anAbstractLevelModel);
-final Set setAbstractClass = ((AbstractClassDetection) csAbstractClass).getCodeSmells();
+		final ICodeSmellDetection csAbstractClass = new AbstractClassDetection();
+		csAbstractClass.detect(anAbstractLevelModel);
+		final Set setAbstractClass = ((AbstractClassDetection) csAbstractClass).getCodeSmells();
 
-final Set setSpeculativeGenerality = 
-this.operators.intersection(setAbstractClass,setOneChildClass);
+		final Set setSpeculativeGenerality = this.operators.intersection(setAbstractClass, setOneChildClass);
 
-final Iterator iterSet = setSpeculativeGenerality.iterator();
-while(iterSet.hasNext()) {
-final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
-final DesignSmell designSmell = new DesignSmell(aCodeSmell);
-designSmell.setName("SpeculativeGenerality");
-final String definition = "To defined";
-designSmell.setDefinition(definition);
-candidateDesignSmells.add(designSmell);
-}
-this.setSetOfDesignSmells(candidateDesignSmells);
-}
+		final Iterator iterSet = setSpeculativeGenerality.iterator();
+		while (iterSet.hasNext()) {
+			final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
+			final DesignSmell designSmell = new DesignSmell(aCodeSmell);
+			designSmell.setName("SpeculativeGenerality");
+			final String definition = "To defined";
+			designSmell.setDefinition(definition);
+			candidateDesignSmells.add(designSmell);
+		}
+		this.setSetOfDesignSmells(candidateDesignSmells);
+	}
 }

@@ -32,7 +32,7 @@ public class AntiSingletonDetection extends AbstractDesignSmellDetection impleme
 		this.operators = OperatorsCodeSmells.getInstance();
 		this.relations = Relationships.getInstance();
 	}
-	
+
 	public String getName() {
 		return "AntiSingleton";
 	}
@@ -41,23 +41,23 @@ public class AntiSingletonDetection extends AbstractDesignSmellDetection impleme
 		return "../SAD Rules Creator/rsc/AntiSingleton.rules";
 	}
 
-	
-public void detect(final IAbstractLevelModel anAbstractLevelModel) {
-final Set candidateDesignSmells = new HashSet();
+	public void detect(final IAbstractLevelModel anAbstractLevelModel) {
+		final Set candidateDesignSmells = new HashSet();
 
-final ICodeSmellDetection csNotClassGlobalVariable = new NotClassGlobalVariableDetection();
-csNotClassGlobalVariable.detect(anAbstractLevelModel);
-final Set setNotClassGlobalVariable = ((NotClassGlobalVariableDetection) csNotClassGlobalVariable).getCodeSmells();
+		final ICodeSmellDetection csNotClassGlobalVariable = new NotClassGlobalVariableDetection();
+		csNotClassGlobalVariable.detect(anAbstractLevelModel);
+		final Set setNotClassGlobalVariable = ((NotClassGlobalVariableDetection) csNotClassGlobalVariable)
+				.getCodeSmells();
 
-final Iterator iterSet = setNotClassGlobalVariable.iterator();
-while(iterSet.hasNext()) {
-final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
-final DesignSmell designSmell = new DesignSmell(aCodeSmell);
-designSmell.setName("AntiSingleton");
-final String definition = "To defined";
-designSmell.setDefinition(definition);
-candidateDesignSmells.add(designSmell);
-}
-this.setSetOfDesignSmells(candidateDesignSmells);
-}
+		final Iterator iterSet = setNotClassGlobalVariable.iterator();
+		while (iterSet.hasNext()) {
+			final ICodeSmell aCodeSmell = (ICodeSmell) iterSet.next();
+			final DesignSmell designSmell = new DesignSmell(aCodeSmell);
+			designSmell.setName("AntiSingleton");
+			final String definition = "To defined";
+			designSmell.setDefinition(definition);
+			candidateDesignSmells.add(designSmell);
+		}
+		this.setSetOfDesignSmells(candidateDesignSmells);
+	}
 }
